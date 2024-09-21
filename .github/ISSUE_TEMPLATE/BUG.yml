@@ -19,7 +19,7 @@ body:
       label: Reproducability
       description: Please describe the frequency of the bug
       options: 
-        - It happened once then I tried again and everything worked as expected
+        - It happened once then I tried again and everything worked
         - It happened once then I did not try again
         - I tried multiple times and saw the bug every time
         - I tried multiple times and saw the bug intermittently
