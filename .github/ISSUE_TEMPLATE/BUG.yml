@@ -46,8 +46,8 @@ body:
         - Safari
         - Other
         - None
-        - I don't know
-      validations:
-        required: true
+        - I do not know
+    validations:
+      required: true
       
     
