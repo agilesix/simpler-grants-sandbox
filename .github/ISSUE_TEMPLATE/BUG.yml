@@ -40,6 +40,7 @@ body:
       label: Browser
       description: Which web browser were you using when you experienced the bug? (if any)
       options:
+        - "---"
         - Chrome
         - Firefox
         - Internet Explorer
@@ -48,6 +49,7 @@ body:
         - Other
         - I do not know
         - Not applicable
+      default: 0
     validations:
       required: true
       
