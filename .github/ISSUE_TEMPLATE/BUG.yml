@@ -37,7 +37,6 @@ body:
       label: Browser
       description: Which web browser were you using when you experienced the bug? (if any)
       options:
-        - "Choose one:"
         - Chrome
         - Firefox
         - Internet Explorer
