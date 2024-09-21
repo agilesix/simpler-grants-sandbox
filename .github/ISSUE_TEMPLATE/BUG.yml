@@ -18,8 +18,7 @@ body:
     attributes:
       label: Reproducability
       description: Please describe the frequency of the bug
-      options: 
-        - "Choose one:"
+      options:
         - It happened once then I did not try again
         - It happened once then I tried again and everything worked
         - I tried multiple times and saw the bug every time
