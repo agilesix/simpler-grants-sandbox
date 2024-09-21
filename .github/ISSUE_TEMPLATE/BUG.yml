@@ -19,11 +19,13 @@ body:
       label: Reproducability
       description: Please describe the frequency of the bug
       options: 
-        - It happened once then I tried again and everything worked
+        - "Choose one:"
         - It happened once then I did not try again
+        - It happened once then I tried again and everything worked
         - I tried multiple times and saw the bug every time
         - I tried multiple times and saw the bug intermittently
         - None of the above
+      default: 0
     validations: 
       required: true
   - type: textarea 
@@ -39,14 +41,16 @@ body:
       label: Browser
       description: Which web browser were you using when you experienced the bug? (if any)
       options:
+        - "Choose one:"
         - Chrome
         - Firefox
         - Internet Explorer
         - Microsoft Edge
         - Safari
         - Other
-        - None of these apply
         - I do not know
+        - Not applicable
+      default: 0
     validations:
       required: true
       
