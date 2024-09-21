@@ -49,8 +49,6 @@ body:
         - Other
         - I do not know
         - Not applicable
-      default: 0
-    validations:
-      required: true
+
       
     
