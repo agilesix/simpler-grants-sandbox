@@ -19,14 +19,11 @@ body:
       label: Reproducability
       description: Please describe the frequency of the bug
       options:
-        - "Choose one:"
         - It happened once then I did not try again
         - It happened once then I tried again and everything worked
         - I tried multiple times and saw the bug every time
         - I tried multiple times and saw the bug intermittently
         - None of the above
-    validations: 
-      required: true
   - type: textarea 
     id: repro_steps
     attributes:
