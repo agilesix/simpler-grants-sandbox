@@ -28,7 +28,7 @@ body:
       required: true
   - type: textarea 
     id: repro_steps
-    atributes:
+    attributes:
       label: How to reproduce the bug
       description: To see the bug with our own eyes, what steps should we follow?
     validations:
@@ -45,7 +45,7 @@ body:
         - Microsoft Edge
         - Safari
         - Other
-        - None
+        - None of these apply
         - I do not know
     validations:
       required: true
