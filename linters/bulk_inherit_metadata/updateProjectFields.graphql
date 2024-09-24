@@ -1,0 +1,40 @@
+mutation (
+  $projectId: ID!
+  $itemId: ID!
+  $pillarFieldId: ID!
+  $pillarValue: String!
+  $quadFieldId: ID!
+  $quadValue: String!
+) {
+  pillar: updateProjectV2ItemFieldValue(
+    input: {
+      projectId: $projectId
+      itemId: $itemId
+      fieldId: $pillarFieldId
+      value: { singleSelectOptionId: $pillarValue }
+    }
+  ) {
+    ...UpdateResponseFragment
+  }
+  quad: updateProjectV2ItemFieldValue(
+    input: {
+      projectId: $projectId
+      itemId: $itemId
+      fieldId: $quadFieldId
+      value: { iterationId: $quadValue }
+    }
+  ) {
+    ...UpdateResponseFragment
+  }
+}
+
+fragment UpdateResponseFragment on UpdateProjectV2ItemFieldValuePayload {
+  projectV2Item {
+    id
+    content {
+      ... on Issue {
+        url
+      }
+    }
+  }
+}
