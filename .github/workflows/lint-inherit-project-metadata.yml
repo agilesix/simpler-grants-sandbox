@@ -1,0 +1,28 @@
+name: Lint - Inherit project metadata
+
+on:
+  # manual trigger
+  workflow_dispatch:
+  # trigger on PRs that affect this file or a file used to run the linter
+  pull_request:
+    paths:
+      - linters/bulk_inherit_metadata/**
+      - .github/workflows/lint-inherit-project-metadata.yml
+  # trigger on a schedule: Monday-Friday at 1am ET
+  schedule:
+    - cron: "00 5 * * 1-5"
+
+jobs:
+  run-inherit-metadata:
+    name: Run inherit project metadata
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GH_PROJECT_ACCESS_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Propagate project metadata from parent issue to sub-issues
+        run: |
+          ./linters/bulk_inherit_metadata/run.sh \
+            --org agilesix \
+            --project 17
