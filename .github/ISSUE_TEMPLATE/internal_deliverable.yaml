@@ -1,0 +1,57 @@
+name: Internal - Deliverable
+projects: "agilesix/simpler-grants-sandbox"
+type: Deliverable
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: 1-2 sentence summary of the deliverable
+    validations:
+      required: true
+      
+  - type: textarea
+    id: press_release
+    attributes:
+      label: Press release
+      description: A paragraph to be included in a press release
+    validations:
+      required: false
+      
+  - type: textarea
+    id: assumptions
+    attributes:
+      label: Assumptions 
+      description: A bulleted list of assumptions
+    validations:
+      required: false
+      
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies 
+      description: Links to upstream tickets
+    validations:
+      required: false
+      
+  - type: textarea
+    id: related_goals
+    attributes:
+      label: Related goals 
+    validations:
+      required: false
+      
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: Acceptance criteria
+      description: A clear and concise checklist of expectations including definition of done
+    validations:
+      required: false
+      
+  - type: textarea
+    id: metrics
+    attributes:
+      label: Metrics 
+    validations:
+      required: false
