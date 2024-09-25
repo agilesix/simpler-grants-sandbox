@@ -1,0 +1,49 @@
+name: Internal - Task
+description: Describe a task that needs to be completed
+projects: "agilesix/simpler-grants-sandbox"
+type: Task
+body:
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: The priority of the task relative to other tasks
+      options:
+        - Low
+        - Medium
+        - High
+        - Urgent
+      validations:
+        required: true
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: A clear and concise summary of the task
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: Acceptance criteria
+      description: A clear and concise checklist of expectations including definition of done.
+      placeholder: Explain the steps to success!
+    validations:
+      required: false
+  - type: dropdown
+    id: pillar
+    attributes:
+      label: Pillar
+      description: The pillar to which the task is most impactful (if any)
+      options:
+        - SimplerApply
+        - SimplerEngagement
+        - SimplerFind
+        - SimplerNOFO
+        - SimplerPlatform
+        - SimplerReporting
+        - Overall Program
+        - Other
+
+
+      
