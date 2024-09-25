@@ -19,6 +19,8 @@ body:
         - SimplerReporting
         - Overall Program
         - Other
+    validations:
+      required: true
   - type: textarea
     id: long_description
     attributes: 
@@ -33,6 +35,14 @@ body:
       description: The key risks for the body of work
     validations:
       required: true
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: Acceptance criteria
+      description: A clear and concise checklist of expectations including definition of done.
+      placeholder: Explain the steps to success!
+    validations:
+      required: false
 
 
 
