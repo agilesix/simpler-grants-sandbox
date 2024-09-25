@@ -13,8 +13,8 @@ body:
         - Medium
         - High
         - Urgent
-      validations:
-        required: true
+    validations:
+      required: true
   - type: textarea
     id: summary
     attributes:
