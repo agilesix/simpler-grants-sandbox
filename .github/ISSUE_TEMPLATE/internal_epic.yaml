@@ -19,14 +19,16 @@ body:
         - Overall Program
         - Other
     validations:
-      required: true
+      required: false
+      
   - type: textarea
-    id: long_description
+    id: summary
     attributes: 
       label: Technical description
       description: A clear summmary of the body of work
     validations:
       required: true
+      
   - type: textarea
     id: key_risks
     attributes: 
@@ -34,14 +36,6 @@ body:
       description: The key risks for the body of work
     validations:
       required: true
-  - type: textarea
-    id: acceptance_criteria
-    attributes:
-      label: Acceptance criteria
-      description: A clear and concise checklist of expectations including definition of done
-      placeholder: Explain the steps to success!
-    validations:
-      required: false
 
 
 
