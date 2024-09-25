@@ -5,9 +5,9 @@ projects: "agilesix/simpler-grants-sandbox"
 type: Bug
 body:
   - type: textarea
-    id: long_description
+    id: summary
     attributes: 
-      label: Description
+      label: Summary
       description: Please describe the bug you experienced
       placeholder: What happened? What did you want to happen?
     validations:
@@ -44,6 +44,12 @@ body:
         - Other
         - I do not know
         - Not applicable
-
-      
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/HHS/simpler-grants-gov/blob/main/CODE_OF_CONDUCT.md)
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true      
     
