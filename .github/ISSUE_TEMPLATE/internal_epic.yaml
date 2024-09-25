@@ -1,0 +1,39 @@
+name: Internal - Epic
+description: Describe a large body of work that can be broken down into smaller tasks
+title: "[Epic] "
+projects: "agilesix/simpler-grants-sandbox"
+type: Task
+labels: Epic
+body:
+  - type: dropdown
+    id: pillar
+    attributes:
+      label: Pillar
+      description: The pillar which will be impacted by the body of work
+      options:
+        - SimplerApply
+        - SimplerEngagement
+        - SimplerFind
+        - SimplerNOFO
+        - SimplerPlatform
+        - SimplerReporting
+        - Overall Program
+        - Other
+  - type: textarea
+    id: long_description
+    attributes: 
+      label: Technical description
+      description: A clear summmary of the body of work
+    validations:
+      required: true
+  - type: textarea
+    id: key_risks
+    attributes: 
+      label: Key risks
+      description: The key risks for the body of work
+    validations:
+      required: true
+
+
+
+  
