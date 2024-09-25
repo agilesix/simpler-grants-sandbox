@@ -15,6 +15,20 @@ body:
         - Urgent
     validations:
       required: true
+  - type: dropdown
+    id: pillar
+    attributes:
+      label: Pillar
+      description: The pillar in which the task is most impactful (if any)
+      options:
+        - SimplerApply
+        - SimplerEngagement
+        - SimplerFind
+        - SimplerNOFO
+        - SimplerPlatform
+        - SimplerReporting
+        - Overall Program
+        - Other
   - type: textarea
     id: summary
     attributes:
@@ -30,20 +44,7 @@ body:
       placeholder: Explain the steps to success!
     validations:
       required: false
-  - type: dropdown
-    id: pillar
-    attributes:
-      label: Pillar
-      description: The pillar to which the task is most impactful (if any)
-      options:
-        - SimplerApply
-        - SimplerEngagement
-        - SimplerFind
-        - SimplerNOFO
-        - SimplerPlatform
-        - SimplerReporting
-        - Overall Program
-        - Other
+
 
 
       
