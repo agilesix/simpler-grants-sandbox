@@ -2,8 +2,7 @@ name: Internal - Epic
 description: Describe a large body of work that can be broken down into smaller tasks
 title: "[Epic] "
 projects: "agilesix/simpler-grants-sandbox"
-type: Task
-labels: Epic
+type: Epic
 body:
   - type: dropdown
     id: pillar
