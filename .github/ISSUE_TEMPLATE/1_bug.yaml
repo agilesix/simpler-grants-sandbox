@@ -1,6 +1,6 @@
 name: Bug
 description: Report a bug
-title: "[BUG] "
+title: "[Bug] "
 projects: "agilesix/simpler-grants-sandbox"
 type: Bug
 body:
