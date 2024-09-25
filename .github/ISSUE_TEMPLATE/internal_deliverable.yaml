@@ -1,4 +1,5 @@
 name: Internal - Deliverable
+description: Describe a deliverable that needs to be produced
 projects: "agilesix/simpler-grants-sandbox"
 type: Deliverable
 body:
