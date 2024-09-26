@@ -5,18 +5,6 @@ projects: "agilesix/simpler-grants-sandbox"
 type: Task
 body:
   - type: dropdown
-    id: priority
-    attributes:
-      label: Priority
-      description: The priority of the task relative to other tasks
-      options:
-        - Low
-        - Medium
-        - High
-        - Urgent
-    validations:
-      required: true
-  - type: dropdown
     id: pillar
     attributes:
       label: Pillar
