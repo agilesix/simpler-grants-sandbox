@@ -58,6 +58,9 @@ done
 mkdir -p tmp
 roadmap_items_file="./tmp/roadmap-export.json"
 sprint_items_file="./tmp/sprint-export.json"
+tasks_file="./tmp/task-level-issues.json"
+epics_file="./tmp/epic-level-issues.json"
+deliverables_file="./tmp/deliverable-level-issues.json"
 root="./linters/export_delivery_data"
 roadmap_query=$(cat "${root}/getRoadmapData.graphql")
 sprint_query=$(cat "${root}/getSprintData.graphql")
@@ -83,12 +86,22 @@ gh api graphql \
  # reformat each item
  {
     title: .content.title,
+    url: .content.url,
     parent: .content.parent.url,
-    type: .content.issueType.name,
+    issue_type: .content.issueType.name,
     pillar: .pillar.name,
     quad_name: .quad.title,
     quad_start: .quad.startDate,
     quad_length: .quad.duration,
+    quad_end: (
+      if .quad.startDate == null 
+      then null 
+      else (
+        (.quad.startDate | strptime(\"%Y-%m-%d\") | mktime) 
+        + (.quad.duration * 86400) | strftime(\"%Y-%m-%d\")
+      )
+      end
+    ),
  }
  
  ]" > $roadmap_items_file  # write output to a file
@@ -114,14 +127,35 @@ gh api graphql \
  # reformat each item
  {
     title: .content.title,
+    url: .content.url,
     parent: .content.parent.url,
-    type: .content.issueType.name,
+    issue_type: .content.issueType.name,
+    points: .points.number,
     sprint_name: .sprint.title,
     sprint_start: .sprint.startDate,
     sprint_length: .sprint.duration,
-    points: .points.number,
+    sprint_end: (
+      if .sprint.startDate == null 
+      then null 
+      else (
+        (.sprint.startDate | strptime(\"%Y-%m-%d\") | mktime) 
+        + (.sprint.duration * 86400) | strftime(\"%Y-%m-%d\")
+      )
+      end
+    ),
  } |
  # filter for task-level issues
- select(.type != \"Deliverable\")
+ select(.issue_type != \"Deliverable\")
  
  ]" > $sprint_items_file  # write output to a file
+
+# #######################################################
+# Transform the exported data
+# #######################################################
+
+python "${root}/join_parent_issues.py" \
+ --sprint-file-in $sprint_items_file \
+ --roadmap-file-in $roadmap_items_file \
+ --task-file-out $tasks_file \
+ --epic-file-out $epics_file \
+ --deliverable-file-out $deliverables_file
