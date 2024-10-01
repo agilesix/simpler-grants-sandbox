@@ -25,6 +25,9 @@ query ($endCursor: String, $login: String!, $project: Int!, $batch: Int!) {
                 number
               }
             }
+            status: fieldValueByName(name: "Status") {
+              ...singleSelectContent
+            }
           }
         }
       }
@@ -54,4 +57,9 @@ fragment iterationContent on ProjectV2ItemFieldIterationValue {
   title
   startDate
   duration
+}
+
+fragment singleSelectContent on ProjectV2ItemFieldSingleSelectValue {
+  optionId
+  name
 }
