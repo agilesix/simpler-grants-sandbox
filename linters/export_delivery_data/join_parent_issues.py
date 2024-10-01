@@ -30,20 +30,20 @@ class IssueMetadata:
     issue_opened_at: str
     issue_closed_at: str | None
     # Sprint metadata -- custom fields specific to the sprint board project
+    issue_points: int | None = field(default=None)
+    issue_status: str | None = field(default=None)
     sprint_id: str | None = field(default=None)
     sprint_name: str | None = field(default=None)
     sprint_start: str | None = field(default=None)
     sprint_length: int | None = field(default=None)
     sprint_end: str | None = field(default=None)
-    points: int | None = field(default=None)
-    status: str | None = field(default=None)
     # Roadmap metadata -- custom fields specific to the roadmap project
     quad_id: str | None = field(default=None)
     quad_name: str | None = field(default=None)
     quad_start: str | None = field(default=None)
     quad_length: int | None = field(default=None)
     quad_end: str | None = field(default=None)
-    pillar: str | None = field(default=None)
+    deliverable_pillar: str | None = field(default=None)
     # Parent metadata -- attributes about parent issues populated via lookup
     deliverable_url: str | None = field(default=None)
     deliverable_title: str | None = field(default=None)
@@ -133,7 +133,7 @@ def flatten_issue_data(lookup: dict[str, IssueMetadata]) -> list[dict]:
             # Set deliverable metadata
             issue.deliverable_title = deliverable.issue_title
             issue.deliverable_url = deliverable.issue_url
-            issue.pillar = deliverable.pillar
+            issue.deliverable_pillar = deliverable.deliverable_pillar
             # Set quad metadata
             issue.quad_id = deliverable.quad_id
             issue.quad_name = deliverable.quad_name
