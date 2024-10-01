@@ -2,7 +2,7 @@
 
 import argparse
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 
 
@@ -18,33 +18,36 @@ class IssueType(Enum):
 
 
 @dataclass
-class IssueCommon:
+class IssueMetadata:
     """Stores information about issue type and parent (if applicable)"""
 
-    title: str
-    url: str
-    parent: str | None
+    issue_title: str
+    issue_url: str
+    issue_parent: str | None
     issue_type: IssueType
-
-
-@dataclass
-class SprintItem(IssueCommon):
-
-    sprint_name: str | None
-    sprint_start: str | None
-    sprint_length: int | None
-    sprint_end: str | None
-    points: int | None
-
-
-@dataclass
-class RoadmapItem(IssueCommon):
-
-    quad_name: str | None
-    quad_start: str | None
-    quad_length: int | None
-    quad_end: str | None
-    pillar: str | None
+    issue_is_closed: bool
+    issue_opened_at: str
+    issue_closed_at: str | None
+    # sprint metadata
+    sprint_id: str | None = field(default=None)
+    sprint_name: str | None = field(default=None)
+    sprint_start: str | None = field(default=None)
+    sprint_length: int | None = field(default=None)
+    sprint_end: str | None = field(default=None)
+    points: int | None = field(default=None)
+    status: str | None = field(default=None)
+    # roadmap metadata
+    quad_id: str | None = field(default=None)
+    quad_name: str | None = field(default=None)
+    quad_start: str | None = field(default=None)
+    quad_length: int | None = field(default=None)
+    quad_end: str | None = field(default=None)
+    pillar: str | None = field(default=None)
+    # parent metadata
+    deliverable_url: str | None = field(default=None)
+    deliverable_title: str | None = field(default=None)
+    epic_url: str | None = field(default=None)
+    epic_title: str | None = field(default=None)
 
 
 def load_json_file(path: str) -> list[dict]:
@@ -60,89 +63,103 @@ def dump_to_json(path: str, data: dict | list[dict]):
 
 
 def populate_issue_lookup_table(
-    lookup: dict[str, IssueCommon],
+    lookup: dict[str, IssueMetadata],
     issues: list[dict],
-) -> dict[str, IssueCommon]:
+) -> dict[str, IssueMetadata]:
     """Populate a lookup table that maps issue URLs to their issue type and parent."""
     for issue in issues:
-        url = issue.get("url")
-        if not url:
-            print(f"Skipping this issue because it doesn't have a URL: {issue}")
-            continue
-        entry = IssueCommon(
-            title=issue.get("title", ""),
-            url=url,
-            parent=issue.get("parent"),
-            issue_type=IssueType(issue.get("issue_type")),
-        )
-        lookup[url] = entry
+        entry = IssueMetadata(**issue)
+        lookup[entry.issue_url] = entry
     return lookup
 
 
-def get_parent_deliverable(
+def get_parent_with_type(
     child_url: str,
-    lookup: dict[str, IssueCommon],
-) -> str | None:
-    """Traverse the lookup table to find the parent deliverable for a given task."""
+    lookup: dict[str, IssueMetadata],
+    type_wanted: IssueType,
+) -> IssueMetadata | None:
+    """
+    Traverse the lookup table to find an issue's parent with a specific type.
+
+    This is useful if we have multiple nested issues, and we want to find the
+    top level deliverable or epic that a given task or bug is related to.
+    """
     # Get the initial child issue and its parent (if applicable) from the URL
     child = lookup.get(child_url)
     if not child:
         raise ValueError(f"Lookup doesn't contain issue with url: {child_url}")
-    if not child.parent:
+    if not child.issue_parent:
         return None
 
     # Travel up the issue hierarchy until we:
     #  - Find a parent issue with a "Deliverable" type
     #  - Get to an issue without a parent
     #  - Have traversed 5 issues (breaks out of issue cycles)
-    parent_url = child.parent
+    parent_url = child.issue_parent
     for _ in range(5):
         parent = lookup.get(parent_url)
         # If no parent is found, return None
         if not parent:
             return None
-        # If the parent is a deliverable, return its URL
-        if parent.issue_type == IssueType.DELIVERABLE:
-            return parent_url
+        # If the parent matches the desired type, return it
+        if IssueType(parent.issue_type) == type_wanted:
+            return parent
         # If the parent doesn't have a its own parent, return None
-        if not parent.parent:
+        if not parent.issue_parent:
             return None
         # Otherwise update the parent_url to "grandparent" and continue
-        parent_url = parent.parent
+        parent_url = parent.issue_parent
 
     # Return the URL of the parent deliverable (or None)
     return None
 
 
-def filter_items(
-    data: list[dict],
-    schema: type[IssueCommon],
-    valid_types: list[IssueType],
-    parent_lookup: dict | None = None,
-) -> list[dict]:
-    """Filter data for the correct type and"""
-    result = []
-    for issue_data in data:
-        issue = schema(**issue_data)
-        # Drop deliverables and epics
-        if IssueType(issue.issue_type) not in valid_types:
+def flatten_issue_data(lookup: dict[str, IssueMetadata]) -> list[dict]:
+    """Flatten issue data and inherit data from parent epic an deliverable."""
+    result: list[dict] = []
+    for issue in lookup.values():
+        # If the issue is a deliverable or epic, move to the next one
+        if IssueType(issue.issue_type) in [IssueType.DELIVERABLE, IssueType.EPIC]:
             continue
-        entry = {**issue_data}
-        if parent_lookup:
-            entry["deliverable"] = get_parent_deliverable(
-                child_url=issue.url,
-                lookup=parent_lookup,
-            )
-        # Add the entry to the output list
-        result.append(entry)
+
+        # Get the parent deliverable, if the issue has one
+        deliverable = get_parent_with_type(
+            child_url=issue.issue_url,
+            lookup=lookup,
+            type_wanted=IssueType.DELIVERABLE,
+        )
+        if deliverable:
+            # Set deliverable metadata
+            issue.deliverable_title = deliverable.issue_title
+            issue.deliverable_url = deliverable.issue_url
+            issue.pillar = deliverable.pillar
+            # Set quad metadata
+            issue.quad_id = deliverable.quad_id
+            issue.quad_name = deliverable.quad_name
+            issue.quad_start = deliverable.quad_start
+            issue.quad_end = deliverable.quad_end
+            issue.quad_length = deliverable.quad_length
+
+        # Get the parent epic, if the issue has one
+        epic = get_parent_with_type(
+            child_url=issue.issue_url,
+            lookup=lookup,
+            type_wanted=IssueType.EPIC,
+        )
+        if epic:
+            issue.epic_title = epic.issue_title
+            issue.epic_url = epic.issue_url
+
+        # Add the issue to the results
+        result.append(issue.__dict__)
+
+    # Return the results
     return result
 
 
-def transform_issue_data(
+def run_transformations(
     sprint_file_in: str,
     roadmap_file_in: str,
-    deliverable_file_out: str,
-    epic_file_out: str,
     task_file_out: str,
 ) -> None:
     """Runs a transformation pipeline to transform issue data to the correct format."""
@@ -151,34 +168,11 @@ def transform_issue_data(
     roadmap_data_in = load_json_file(roadmap_file_in)
     # Populate a lookup table with this data
     lookup = {}
-    lookup = populate_issue_lookup_table(lookup, sprint_data_in)
     lookup = populate_issue_lookup_table(lookup, roadmap_data_in)
-
-    # Filter sprint data for tasks and write to JSON
-    tasks_out = filter_items(
-        data=sprint_data_in,
-        schema=SprintItem,
-        valid_types=[IssueType.BUG, IssueType.TASK, IssueType.NONE],
-        parent_lookup=lookup,
-    )
+    lookup = populate_issue_lookup_table(lookup, sprint_data_in)
+    # flatten and write issue level data to output file
+    tasks_out = flatten_issue_data(lookup)
     dump_to_json(task_file_out, tasks_out)
-
-    # Filter roadmap data for epics and write to JSON
-    epics_out = filter_items(
-        data=roadmap_data_in,
-        schema=RoadmapItem,
-        valid_types=[IssueType.EPIC],
-        parent_lookup=lookup,
-    )
-    dump_to_json(epic_file_out, epics_out)
-
-    # Filter roadmap data for deliverables and write to JSON
-    deliverables_out = filter_items(
-        data=roadmap_data_in,
-        schema=RoadmapItem,
-        valid_types=[IssueType.DELIVERABLE],
-    )
-    dump_to_json(deliverable_file_out, deliverables_out)
 
 
 if __name__ == "__main__":
@@ -202,21 +196,11 @@ if __name__ == "__main__":
         "--task-file-out",
         help="Path to output location for JSON of tasks",
     )
-    parser.add_argument(
-        "--epic-file-out",
-        help="Path to output location for JSON of epics",
-    )
-    parser.add_argument(
-        "--deliverable-file-out",
-        help="Path to output location for JSON of deliverables",
-    )
     # Parse arguments from the CLI
     args = parser.parse_args()
     # run transformation pipeline
-    transform_issue_data(
+    run_transformations(
         sprint_file_in=args.sprint_file_in,
         roadmap_file_in=args.roadmap_file_in,
         task_file_out=args.task_file_out,
-        epic_file_out=args.epic_file_out,
-        deliverable_file_out=args.deliverable_file_out,
     )

@@ -85,11 +85,15 @@ gh api graphql \
  .[] |
  # reformat each item
  {
-    title: .content.title,
-    url: .content.url,
-    parent: .content.parent.url,
+    issue_title: .content.title,
+    issue_url: .content.url,
+    issue_parent: .content.parent.url,
     issue_type: .content.issueType.name,
+    issue_is_closed: .content.closed,
+    issue_opened_at: .content.createdAt,
+    issue_closed_at: .content.closedAt,
     pillar: .pillar.name,
+    quad_id: .quad.iterationId,
     quad_name: .quad.title,
     quad_start: .quad.startDate,
     quad_length: .quad.duration,
@@ -126,11 +130,16 @@ gh api graphql \
  .[] |
  # reformat each item
  {
-    title: .content.title,
-    url: .content.url,
-    parent: .content.parent.url,
+    issue_title: .content.title,
+    issue_url: .content.url,
+    issue_parent: .content.parent.url,
     issue_type: .content.issueType.name,
+    issue_is_closed: .content.closed,
+    issue_opened_at: .content.createdAt,
+    issue_closed_at: .content.closedAt,
+    status: .status.name,
     points: .points.number,
+    sprint_id: .sprint.iterationId,
     sprint_name: .sprint.title,
     sprint_start: .sprint.startDate,
     sprint_length: .sprint.duration,
@@ -156,6 +165,4 @@ gh api graphql \
 python "${root}/join_parent_issues.py" \
  --sprint-file-in $sprint_items_file \
  --roadmap-file-in $roadmap_items_file \
- --task-file-out $tasks_file \
- --epic-file-out $epics_file \
- --deliverable-file-out $deliverables_file
+ --task-file-out $tasks_file
