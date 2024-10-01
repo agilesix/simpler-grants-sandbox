@@ -21,6 +21,7 @@ class IssueType(Enum):
 class IssueMetadata:
     """Stores information about issue type and parent (if applicable)"""
 
+    # Common metadata -- attributes about the issue common to both projects
     issue_title: str
     issue_url: str
     issue_parent: str | None
@@ -28,7 +29,7 @@ class IssueMetadata:
     issue_is_closed: bool
     issue_opened_at: str
     issue_closed_at: str | None
-    # sprint metadata
+    # Sprint metadata -- custom fields specific to the sprint board project
     sprint_id: str | None = field(default=None)
     sprint_name: str | None = field(default=None)
     sprint_start: str | None = field(default=None)
@@ -36,14 +37,14 @@ class IssueMetadata:
     sprint_end: str | None = field(default=None)
     points: int | None = field(default=None)
     status: str | None = field(default=None)
-    # roadmap metadata
+    # Roadmap metadata -- custom fields specific to the roadmap project
     quad_id: str | None = field(default=None)
     quad_name: str | None = field(default=None)
     quad_start: str | None = field(default=None)
     quad_length: int | None = field(default=None)
     quad_end: str | None = field(default=None)
     pillar: str | None = field(default=None)
-    # parent metadata
+    # Parent metadata -- attributes about parent issues populated via lookup
     deliverable_url: str | None = field(default=None)
     deliverable_title: str | None = field(default=None)
     epic_url: str | None = field(default=None)
@@ -170,7 +171,7 @@ def run_transformations(
     lookup = {}
     lookup = populate_issue_lookup_table(lookup, roadmap_data_in)
     lookup = populate_issue_lookup_table(lookup, sprint_data_in)
-    # flatten and write issue level data to output file
+    # Flatten and write issue level data to output file
     tasks_out = flatten_issue_data(lookup)
     dump_to_json(task_file_out, tasks_out)
 
@@ -179,9 +180,8 @@ if __name__ == "__main__":
 
     # Create parser
     parser = argparse.ArgumentParser(
-        prog="ProgramName",
-        description="What the program does",
-        epilog="Text at the bottom of help",
+        prog="TransformIssueMetadata",
+        description="Transforms issue metadata exported from GitHub projects",
     )
     # Add arguments
     parser.add_argument(
@@ -198,7 +198,7 @@ if __name__ == "__main__":
     )
     # Parse arguments from the CLI
     args = parser.parse_args()
-    # run transformation pipeline
+    # Run transformation pipeline
     run_transformations(
         sprint_file_in=args.sprint_file_in,
         roadmap_file_in=args.roadmap_file_in,
