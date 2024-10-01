@@ -60,7 +60,9 @@ def load_json_file(path: str) -> list[dict]:
 def dump_to_json(path: str, data: dict | list[dict]):
     """Write a dictionary or list of dicts to a json file."""
     with open(path, "w") as f:
-        json.dump(data, f, indent=2)
+        # Uses ensure_ascii=False to preserve emoji characters in output
+        # https://stackoverflow.com/a/52206290/7338319
+        json.dump(data, f, indent=2, ensure_ascii=False)
 
 
 def populate_issue_lookup_table(
