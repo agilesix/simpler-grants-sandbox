@@ -24,6 +24,7 @@ class DeliveryMetricsModel:
 		cursor = self.dbh.cursor()
 		cursor.execute(sql, data)
 		last_row_id = cursor.lastrowid
+		self.dbh.commit()
 		cursor.close()
 
 		return last_row_id
@@ -45,6 +46,7 @@ class DeliveryMetricsModel:
 		cursor = self.dbh.cursor()
 		cursor.execute(sql, data)
 		last_row_id = cursor.lastrowid
+		self.dbh.commit()
 		cursor.close()
 
 		return last_row_id
@@ -78,6 +80,7 @@ class DeliveryMetricsModel:
 		cursor = self.dbh.cursor()
 		cursor.execute(sql, data)
 		last_row_id = cursor.lastrowid
+		self.dbh.commit()
 		cursor.close()
 
 		return last_row_id

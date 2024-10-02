@@ -194,4 +194,5 @@ class DeliveryMetricsDataLoader:
 				print("issue guid '{}' mapped to local db row id {}".format(new_issue.get('guid'), issue_id))
 
 		# close db connection
-		db.closeConnection()
+		db.disconnect()
+

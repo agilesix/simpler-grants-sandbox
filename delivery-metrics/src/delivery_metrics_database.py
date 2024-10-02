@@ -14,13 +14,26 @@ class DeliveryMetricsDatabase:
 
 		if not self._dbConnection:
 			try:
-				print("connecting to database '{}'".format(self.config.DB_PATH))
-				self._dbConnection = sqlite3.connect(self.config.DB_PATH)
+				db_uri = "file:{}?mode=rw".format(self.config.DB_PATH)
+				print("connecting to database '{}'".format(db_uri))
+				self._dbConnection = sqlite3.connect(db_uri, uri=True)
 			except sqlite3.Error as error:
 				print("WARNING: {}: {}".format(error, self.config.DB_PATH))
 
 		return self._dbConnection
 	
+
+	def commit(self) -> None:
+
+		if not self._dbConnection:
+			print("WARNING: unable to commit transaction")
+			return
+
+		try:
+			self._dbConnection.commit()
+		except sqlite3.Error as error:
+			print("WARNING: {}".format(error))
+
 
 	def cursor(self) -> sqlite3.Cursor:
 
@@ -34,7 +47,7 @@ class DeliveryMetricsDatabase:
 		return db_cursor
 
 
-	def closeConnection(self) -> None:
+	def disconnect(self) -> None:
 	
 		if self._dbConnection is not None:
 			print("closing db connection")
@@ -42,6 +55,8 @@ class DeliveryMetricsDatabase:
 				self._dbConnection.close()
 			except:
 				pass
+
+		self._dbConnection = None
 
 	
 	def __del__(self):
