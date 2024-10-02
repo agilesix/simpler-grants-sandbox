@@ -6,19 +6,38 @@ body:
   - type: textarea
     id: summary
     attributes: 
-      label: Technical description
-      description: A clear summmary of the body of work
+      label: Description
+      description: A brief summary that captures how this epic will achieve the goals of a deliverable
     validations:
       required: true
       
   - type: textarea
     id: key_risks
     attributes: 
-      label: Key risks
-      description: The key risks for the body of work
+      label: Probability of success and key risks
+      description: Estimated probability that this epic succeeds; and a brief summary of key risks
     validations:
       required: true
 
+  - type: input
+    id: delivery_date
+    attributes:
+      label: Date of delivery
+      description: Estimated delivery date for this epic
+    validations:
+      required: true
 
-
+  - type: dropdown
+    id: loe_points
+    attributes:
+      label: Level of effort
+      options:
+        - "XS"
+        - "S"
+        - "M"
+        - "L"
+        - "XL"
+        - "XXL"
+      validations:
+        required: false 
   
