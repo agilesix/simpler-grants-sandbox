@@ -17,10 +17,12 @@ class DeliveryMetricsModel:
 		end = sprint.get('end_date')
 		duration = sprint.get('duration')
 
-		sql = "insert into sprint(guid, name, start_date, end_date, duration) values ('{}', '{}', '{}', '{}', '{}') on conflict(guid) do update set name = '{}', start_date = '{}', end_date = '{}', duration = {}".format(guid, name, start, end, duration, name, start, end, duration)
+		sql = "insert into sprint(guid, name, start_date, end_date, duration) values (?, ?, ?, ?, ?) on conflict(guid) do update set name = ?, start_date = ?, end_date = ?, duration = ?"
+
+		data = (guid, name, start, end, duration, name, start, end, duration)
 
 		cursor = self.dbh.cursor()
-		cursor.execute(sql)
+		cursor.execute(sql, data)
 		last_row_id = cursor.lastrowid
 		cursor.close()
 
@@ -36,10 +38,12 @@ class DeliveryMetricsModel:
 		guid = epic.get('guid')
 		title = epic.get('title')
 
-		sql = "insert into epic(guid, title) values ('{}', '{}') on conflict(guid) do update set title = '{}'".format(guid, title, title)
+		sql = "insert into epic(guid, title) values (?, ?) on conflict(guid) do update set title = ?"
+		 
+		data = (guid, title, title)
 
 		cursor = self.dbh.cursor()
-		cursor.execute(sql)
+		cursor.execute(sql, data)
 		last_row_id = cursor.lastrowid
 		cursor.close()
 
