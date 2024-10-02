@@ -15,12 +15,12 @@ CREATE TABLE issue (
 	type TEXT NOT NULL,
 	points INTEGER,
 	status TEXT,
-	opened_at DATE,
-	closed_at DATE,
+	opened_date DATE,
+	closed_date DATE,
 	is_closed INTEGER,
-	parent_guid TEXT,
-	epic_guid TEXT,
-	sprint_guid TEXT
+	parent_issue_guid TEXT,
+	epic_id TEXT,
+	sprint_id TEXT
 );
 
 CREATE TABLE epic (
