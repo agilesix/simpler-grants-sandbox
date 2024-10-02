@@ -8,7 +8,7 @@ body:
     id: press_release
     attributes:
       label: Press release
-      description: A brief summary that captures what is exciting and important about the deliverable
+      description: A brief summary that captures what is exciting and important about this deliverable
     validations:
       required: false
 
@@ -16,7 +16,7 @@ body:
     id: acceptance_criteria
     attributes:
       label: Acceptance criteria
-      description: One to three short acceptance criteria that are clear indicators of whether a deliverable is complete
+      description: One to three short acceptance criteria that are clear indicators of whether this deliverable is complete
     validations:
       required: false
       
@@ -32,7 +32,7 @@ body:
     id: related_goals
     attributes:
       label: Related goals 
-      description: Which of the overall project goals will the deliverable advance?
+      description: Which of the overall project goals will this deliverable advance?
     validations:
       required: false     
   
