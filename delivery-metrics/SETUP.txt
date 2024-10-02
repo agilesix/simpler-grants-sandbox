@@ -6,9 +6,9 @@ $ sqlite3 ./db/delivery_metrics.db < ./sql/create_delivery_metrics_db.sql
 
 STEP 2 - Add a json file to the json directory (or use one that's already there)
 ------------------------------------
-$ cd simpler-grants-sandbox/delivery-metrics/
-$ cp PATH_OF_MY_FILE ./json/MY_FILE.json   
-(NOTE: replace PATH_OF_MY_FILE and MY_FILE.json with actual values)
+$ cd simpler-grants-sandbox/delivery-metrics/json/
+$ cp PATH_OF_MY_FILE .
+(NOTE: replace PATH_OF_MY_FILE with actual value)
 
 
 STEP 3 - Run the data loader with the json file from step 2 as a command line arg
