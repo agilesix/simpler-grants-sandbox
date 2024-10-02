@@ -8,11 +8,13 @@ STEP 2 - Add a json file to the json directory (or use one that's already there)
 ------------------------------------
 $ cd simpler-grants-sandbox/delivery-metrics/
 $ cp PATH_OF_MY_FILE ./json/MY_FILE.json   
-*** NOTE: replace PATH_OF_MY_FILE and MY_FILE.json with actual values ***
+(NOTE: replace PATH_OF_MY_FILE and MY_FILE.json with actual values)
 
 
 STEP 3 - Run the data loader with the json file from step 2 as a command line arg
 ------------------------------------
 $ cd simpler-grants-sandbox/delivery-metrics/src/
-$ ./load_json.py ./json/MY_FILE.json
-*** NOTE: replace MY_FILE.json with actual value ***
+$ ./load_json.py ../json/MY_FILE.json
+(NOTE: replace MY_FILE.json with actual value)
+
+
