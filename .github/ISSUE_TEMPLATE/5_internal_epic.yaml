@@ -38,6 +38,6 @@ body:
         - "L"
         - "XL"
         - "XXL"
-      validations:
-        required: false 
+    validations:
+      required: false 
   
