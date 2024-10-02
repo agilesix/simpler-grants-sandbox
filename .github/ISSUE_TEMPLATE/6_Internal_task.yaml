@@ -1,23 +1,8 @@
 name: Internal - Task
 description: Describe a task that needs to be completed
-title: "[Task] "
 projects: "agilesix/simpler-grants-sandbox"
 type: Task
 body:
-  - type: dropdown
-    id: pillar
-    attributes:
-      label: Pillar
-      description: The pillar in which the task is most impactful (if any)
-      options:
-        - SimplerApply
-        - SimplerEngagement
-        - SimplerFind
-        - SimplerNOFO
-        - SimplerPlatform
-        - SimplerReporting
-        - Overall Program
-        - Other
   - type: textarea
     id: summary
     attributes:
