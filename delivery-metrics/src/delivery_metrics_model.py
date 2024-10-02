@@ -17,17 +17,16 @@ class DeliveryMetricsModel:
 		end = sprint.get('end_date')
 		duration = sprint.get('duration')
 
-		sql = "insert into sprint(guid, name, start_date, end_date, duration) values (?, ?, ?, ?, ?) on conflict(guid) do update set name = ?, start_date = ?, end_date = ?, duration = ?"
+		sql = "insert into sprint(guid, name, start_date, end_date, duration) values (?, ?, ?, ?, ?) on conflict(guid) do update set name = ?, start_date = ?, end_date = ?, duration = ? returning id"
 
 		data = (guid, name, start, end, duration, name, start, end, duration)
 
 		cursor = self.dbh.cursor()
-		cursor.execute(sql, data)
-		last_row_id = cursor.lastrowid
+		last_row_id_tuple = cursor.execute(sql, data).fetchone()
 		self.dbh.commit()
 		cursor.close()
 
-		return last_row_id
+		return last_row_id_tuple[0]
 
 
 	def syncEpic(self, epic: dict) -> int | None:
@@ -39,17 +38,16 @@ class DeliveryMetricsModel:
 		guid = epic.get('guid')
 		title = epic.get('title')
 
-		sql = "insert into epic(guid, title) values (?, ?) on conflict(guid) do update set title = ?"
+		sql = "insert into epic(guid, title) values (?, ?) on conflict(guid) do update set title = ? returning id"
 		 
 		data = (guid, title, title)
 
 		cursor = self.dbh.cursor()
-		cursor.execute(sql, data)
-		last_row_id = cursor.lastrowid
+		last_row_id_tuple = cursor.execute(sql, data).fetchone()
 		self.dbh.commit()
 		cursor.close()
 
-		return last_row_id
+		return last_row_id_tuple[0]
 
 
 	def syncIssue(self, issue: dict) -> int | None:
@@ -70,17 +68,13 @@ class DeliveryMetricsModel:
 		epic_id = issue.get('epic_id')
 		sprint_id = issue.get('sprint_id')
 
-		sql = "insert into issue (guid, title, type, points, status, opened_date, closed_date, is_closed, parent_issue_guid, epic_id, sprint_id) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) on conflict(guid) do update set title = ?, type = ?, points = ?, status = ?, opened_date = ?, closed_date = ?, is_closed = ?, parent_issue_guid = ?, epic_id = ?, sprint_id = ?"
+		sql = "insert into issue (guid, title, type, points, status, opened_date, closed_date, is_closed, parent_issue_guid, epic_id, sprint_id) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) on conflict(guid) do update set title = ?, type = ?, points = ?, status = ?, opened_date = ?, closed_date = ?, is_closed = ?, parent_issue_guid = ?, epic_id = ?, sprint_id = ? returning id"
 
 		data = (guid, title, t, points, status, opened_date, closed_date, is_closed, parent_guid, epic_id, sprint_id, title, t, points, status, opened_date, closed_date, is_closed, parent_guid, epic_id, sprint_id)
 
-		#print("****\nSQL = {}".format(sql))
-		#print("data = {}".format(data))
-
 		cursor = self.dbh.cursor()
-		cursor.execute(sql, data)
-		last_row_id = cursor.lastrowid
+		last_row_id_tuple = cursor.execute(sql, data).fetchone()
 		self.dbh.commit()
 		cursor.close()
 
-		return last_row_id
+		return last_row_id_tuple[0]
