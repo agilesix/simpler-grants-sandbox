@@ -34,7 +34,7 @@ body:
       label: Related goals 
       description: Which of the overall project goals will this deliverable advance?
     validations:
-      required: true     
+      required: false     
   
   - type: textarea
     id: assumptions
@@ -42,7 +42,7 @@ body:
       label: Assumptions and dependencies
       description: A bulleted list of assumptions and dependencies
     validations:
-      required: true 
+      required: false 
 
   - type: textarea
     id: additional_info
