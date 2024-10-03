@@ -5,7 +5,54 @@ class DeliveryMetricsModel:
 		self.dbh = dbh
 
 
-	def syncSprint(self, sprint: dict) -> int | None:
+	def syncQuad(self, quad: dict) -> int:
+	
+		# validation
+		if not isinstance(quad, dict):
+			return None
+
+		guid = quad.get('guid')
+		name = quad.get('name')
+		start = quad.get('start_date')
+		end = quad.get('end_date')
+		duration = quad.get('duration')
+
+		sql = "insert into quad(guid, name, start_date, end_date, duration) values (?, ?, ?, ?, ?) on conflict(guid) do update set name = ?, start_date = ?, end_date = ?, duration = ? returning id"
+
+		data = (guid, name, start, end, duration, name, start, end, duration)
+
+		cursor = self.dbh.cursor()
+		last_row_id_tuple = cursor.execute(sql, data).fetchone()
+		self.dbh.commit()
+		cursor.close()
+
+		return last_row_id_tuple[0]
+
+
+
+	def syncDeliverable(self, deliverable: dict) -> int:
+		
+		# validation
+		if not isinstance(deliverable, dict):
+			return None
+
+		guid = deliverable.get('guid')
+		title = deliverable.get('title')
+		pillar = deliverable.get('pillar')
+
+		sql = "insert into deliverable(guid, title, pillar) values (?, ?, ?) on conflict(guid) do update set title = ?, pillar = ? returning id"
+
+		data = (guid, title, pillar, title, pillar)
+
+		cursor = self.dbh.cursor()
+		last_row_id_tuple = cursor.execute(sql, data).fetchone()
+		self.dbh.commit()
+		cursor.close()
+
+		return last_row_id_tuple[0]
+
+
+	def syncSprint(self, sprint: dict) -> int:
 
 		# validation
 		if not isinstance(sprint, dict):
@@ -29,7 +76,7 @@ class DeliveryMetricsModel:
 		return last_row_id_tuple[0]
 
 
-	def syncEpic(self, epic: dict) -> int | None:
+	def syncEpic(self, epic: dict) -> int:
 
 		# validation
 		if not isinstance(epic, dict):
@@ -50,7 +97,7 @@ class DeliveryMetricsModel:
 		return last_row_id_tuple[0]
 
 
-	def syncIssue(self, issue: dict) -> int | None:
+	def syncIssue(self, issue: dict) -> int:
 
 		# validation
 		if not isinstance(issue, dict):
