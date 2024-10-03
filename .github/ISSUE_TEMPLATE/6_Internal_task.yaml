@@ -17,7 +17,7 @@ body:
       description: A clear and concise checklist of expectations including definition of done
       placeholder: Explain the steps to success!
     validations:
-      required: false
+      required: true
 
 
 
