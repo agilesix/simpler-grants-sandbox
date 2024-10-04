@@ -13,8 +13,8 @@ class DeliveryMetricsModel:
 
 		guid = quad.get('guid')
 		name = quad.get('name')
-		start = quad.get('start_date')
-		end = quad.get('end_date')
+		start = self.formatDate(quad.get('start_date'))
+		end = self.formatDate(quad.get('end_date'))
 		duration = quad.get('duration')
 
 		sql = "insert into quad(guid, name, start_date, end_date, duration) values (?, ?, ?, ?, ?) on conflict(guid) do update set (name, start_date, end_date, duration) = (?, ?, ?, ?) returning id"
@@ -49,8 +49,8 @@ class DeliveryMetricsModel:
 
 		guid = sprint.get('guid')
 		name = sprint.get('name')
-		start = sprint.get('start_date')
-		end = sprint.get('end_date')
+		start = self.formatDate(sprint.get('start_date'))
+		end = self.formatDate(sprint.get('end_date'))
 		duration = sprint.get('duration')
 
 		sql = "insert into sprint(guid, name, start_date, end_date, duration) values (?, ?, ?, ?, ?) on conflict(guid) do update set (name, start_date, end_date, duration) = (?, ?, ?, ?) returning id"
@@ -87,8 +87,8 @@ class DeliveryMetricsModel:
 		t = issue.get('type')
 		points = issue.get('points') or 0
 		status = issue.get('status')
-		opened_date = issue.get('opened_date')
-		closed_date = issue.get('closed_date')
+		opened_date = self.formatDate(issue.get('opened_date'))
+		closed_date = self.formatDate(issue.get('closed_date'))
 		is_closed = issue.get('is_closed')
 		parent_guid = issue.get('parent_guid')
 		epic_id = issue.get('epic_id')
@@ -101,7 +101,18 @@ class DeliveryMetricsModel:
 		return row_id
 
 
-	def _execute(self, sql: str, data: tuple):
+	def formatDate(self, date: str) -> str:
+
+		if date is None:
+			return None
+
+		if len(date) > 10:
+			date = date[:10]
+
+		return date
+
+
+	def _execute(self, sql: str, data: tuple) -> int:
 
 		cursor = self.dbh.cursor()
 		last_row_id_tuple = cursor.execute(sql, data).fetchone()
