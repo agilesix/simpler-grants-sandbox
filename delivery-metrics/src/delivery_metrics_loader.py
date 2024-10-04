@@ -2,7 +2,11 @@ import json
 import sys
 from delivery_metrics_config import DeliveryMetricsConfig
 from delivery_metrics_database import DeliveryMetricsDatabase
-from delivery_metrics_model import DeliveryMetricsModel
+from delivery_metrics_deliverable_model import DeliveryMetricsDeliverableModel
+from delivery_metrics_epic_model import DeliveryMetricsEpicModel
+from delivery_metrics_issue_model import DeliveryMetricsIssueModel
+from delivery_metrics_sprint_model import DeliveryMetricsSprintModel
+from delivery_metrics_quad_model import DeliveryMetricsQuadModel
 from typing import TextIO
 
 
@@ -216,7 +220,11 @@ class DeliveryMetricsDataLoader:
 	def _persistData(self):
 
 		db = DeliveryMetricsDatabase(self.config)
-		model = DeliveryMetricsModel(db)
+		deliverableModel = DeliveryMetricsDeliverableModel(db)
+		epicModel = DeliveryMetricsEpicModel(db)
+		issueModel = DeliveryMetricsIssueModel(db)
+		sprintModel = DeliveryMetricsSprintModel(db)
+		quadModel = DeliveryMetricsQuadModel(db)
 
 		quad_guid_map = {}
 		deliverable_guid_map = {}
@@ -235,7 +243,7 @@ class DeliveryMetricsDataLoader:
 
 		# write each quad to the db
 		for guid, quad in self.unique_quads.items():
-			quad_id = model.syncQuad(quad)
+			quad_id = quadModel.syncQuad(quad)
 			if quad_id is not None:
 				quad_guid_map[guid] = quad_id
 				update_count['quads'] += 1
@@ -245,7 +253,7 @@ class DeliveryMetricsDataLoader:
 
 		# write each deliverable to the db
 		for guid, deliverable in self.unique_deliverables.items():
-			deliverable_id = model.syncDeliverable(deliverable)
+			deliverable_id = deliverableModel.syncDeliverable(deliverable)
 			if deliverable_id is not None:
 				deliverable_guid_map[guid] = deliverable_id
 				update_count['deliverables'] += 1
@@ -255,7 +263,7 @@ class DeliveryMetricsDataLoader:
 
 		# write each sprint to the db
 		for guid, sprint in self.unique_sprints.items():
-			sprint_id = model.syncSprint(sprint)
+			sprint_id = sprintModel.syncSprint(sprint)
 			if sprint_id is not None:
 				sprint_guid_map[guid] = sprint_id
 				update_count['sprints'] += 1
@@ -265,7 +273,7 @@ class DeliveryMetricsDataLoader:
 
 		# write each epic to the db
 		for guid, epic in self.unique_epics.items():
-			epic_id = model.syncEpic(epic)
+			epic_id = epicModel.syncEpic(epic)
 			if epic_id is not None:
 				epic_guid_map[guid] = epic_id
 				update_count['epics'] += 1
@@ -286,7 +294,7 @@ class DeliveryMetricsDataLoader:
 			del new_issue['epic_guid']
 			del new_issue['sprint_guid']
 
-			issue_id = model.syncIssue(new_issue)
+			issue_id = issueModel.syncIssue(new_issue)
 			if issue_id is not None:
 				update_count['issues'] += 1
 				#print("issue guid '{}' mapped to local db row id {}".format(new_issue.get('guid'), issue_id))
