@@ -188,7 +188,7 @@ class DeliveryMetricsDataLoader:
 
 		# extraction
 		issue_guid = self.removePrefixFromGuid(item.get('issue_url'))
-		issue_type = item.get('issue_type', 'Undefined')
+		issue_type = item.get('issue_type') or 'Undefined'
 		issue = {
 			'guid': issue_guid,
 			'type': issue_type,

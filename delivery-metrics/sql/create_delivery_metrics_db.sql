@@ -13,7 +13,7 @@ CREATE TABLE issue (
 	guid TEXT UNIQUE NOT NULL,
 	title TEXT NOT NULL,
 	type TEXT NOT NULL,
-	points INTEGER,
+	points INTEGER NOT NULL DEFAULT 0,
 	status TEXT,
 	opened_date DATE,
 	closed_date DATE,

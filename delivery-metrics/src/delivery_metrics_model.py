@@ -85,7 +85,7 @@ class DeliveryMetricsModel:
 		guid = issue.get('guid')
 		title = issue.get('title')
 		t = issue.get('type')
-		points = issue.get('points')
+		points = issue.get('points') or 0
 		status = issue.get('status')
 		opened_date = issue.get('opened_date')
 		closed_date = issue.get('closed_date')
