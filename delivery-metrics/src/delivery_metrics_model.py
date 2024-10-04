@@ -17,7 +17,7 @@ class DeliveryMetricsModel:
 		end = self.formatDate(quad.get('end_date'))
 		duration = quad.get('duration')
 
-		sql = "insert into quad(guid, name, start_date, end_date, duration) values (?, ?, ?, ?, ?) on conflict(guid) do update set (name, start_date, end_date, duration) = (?, ?, ?, ?) returning id"
+		sql = "insert into quad(guid, name, start_date, end_date, duration) values (?, ?, ?, ?, ?) on conflict(guid) do update set (name, start_date, end_date, duration, t_modified) = (?, ?, ?, ?, current_timestamp) returning id"
 		data = (guid, name, start, end, duration, name, start, end, duration)
 		row_id = self._execute(sql, data)
 
@@ -34,7 +34,7 @@ class DeliveryMetricsModel:
 		title = deliverable.get('title')
 		pillar = deliverable.get('pillar')
 
-		sql = "insert into deliverable(guid, title, pillar) values (?, ?, ?) on conflict(guid) do update set (title, pillar) = (?, ?) returning id"
+		sql = "insert into deliverable(guid, title, pillar) values (?, ?, ?) on conflict(guid) do update set (title, pillar, t_modified) = (?, ?, current_timestamp) returning id"
 		data = (guid, title, pillar, title, pillar)
 		row_id = self._execute(sql, data)
 
@@ -53,7 +53,7 @@ class DeliveryMetricsModel:
 		end = self.formatDate(sprint.get('end_date'))
 		duration = sprint.get('duration')
 
-		sql = "insert into sprint(guid, name, start_date, end_date, duration) values (?, ?, ?, ?, ?) on conflict(guid) do update set (name, start_date, end_date, duration) = (?, ?, ?, ?) returning id"
+		sql = "insert into sprint(guid, name, start_date, end_date, duration) values (?, ?, ?, ?, ?) on conflict(guid) do update set (name, start_date, end_date, duration, t_modified) = (?, ?, ?, ?, current_timestamp) returning id"
 		data = (guid, name, start, end, duration, name, start, end, duration)
 		row_id = self._execute(sql, data)
 
@@ -69,7 +69,7 @@ class DeliveryMetricsModel:
 		guid = epic.get('guid')
 		title = epic.get('title')
 
-		sql = "insert into epic(guid, title) values (?, ?) on conflict(guid) do update set title = ? returning id"
+		sql = "insert into epic(guid, title) values (?, ?) on conflict(guid) do update set (title, t_modified) = (?, current_timestamp) returning id"
 		data = (guid, title, title)
 		row_id = self._execute(sql, data)
 
@@ -94,7 +94,7 @@ class DeliveryMetricsModel:
 		epic_id = issue.get('epic_id')
 		sprint_id = issue.get('sprint_id')
 
-		sql = "insert into issue (guid, title, type, points, status, opened_date, closed_date, is_closed, parent_issue_guid, epic_id, sprint_id) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) on conflict(guid) do update set (title, type, points, status, opened_date, closed_date, is_closed, parent_issue_guid, epic_id, sprint_id) = (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) returning id"
+		sql = "insert into issue (guid, title, type, points, status, opened_date, closed_date, is_closed, parent_issue_guid, epic_id, sprint_id) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) on conflict(guid) do update set (title, type, points, status, opened_date, closed_date, is_closed, parent_issue_guid, epic_id, sprint_id, t_modified) = (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, current_timestamp) returning id"
 		data = (guid, title, t, points, status, opened_date, closed_date, is_closed, parent_guid, epic_id, sprint_id, title, t, points, status, opened_date, closed_date, is_closed, parent_guid, epic_id, sprint_id)
 		row_id = self._execute(sql, data)
 

@@ -20,13 +20,17 @@ CREATE TABLE issue (
 	is_closed INTEGER,
 	parent_issue_guid TEXT,
 	epic_id TEXT,
-	sprint_id TEXT
+	sprint_id TEXT,
+	t_created TIMESTAMP DEFAULT (datetime('now', 'localtime')),
+	t_modified TIMESTAMP 
 );
 
 CREATE TABLE epic (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	guid TEXT UNIQUE NOT NULL,
-	title TEXT NOT NULL
+	title TEXT NOT NULL,
+	t_created TIMESTAMP DEFAULT (datetime('now', 'localtime')),
+	t_modified TIMESTAMP 
 );
 
 CREATE TABLE sprint (
@@ -35,14 +39,18 @@ CREATE TABLE sprint (
 	name TEXT NOT NULL,
 	start_date DATE,
 	end_date DATE,
-	duration INTEGER
+	duration INTEGER,
+	t_created TIMESTAMP DEFAULT (datetime('now', 'localtime')),
+	t_modified TIMESTAMP 
 );
 
 CREATE TABLE deliverable (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	guid TEXT UNIQUE NOT NULL,
 	title TEXT NOT NULL,
-	pillar TEXT 
+	pillar TEXT, 
+	t_created TIMESTAMP DEFAULT (datetime('now', 'localtime')),
+	t_modified TIMESTAMP 
 );
 
 
@@ -52,6 +60,8 @@ CREATE TABLE quad (
 	name TEXT NOT NULL,
 	start_date DATE,
 	end_date DATE,
-	duration INTEGER
+	duration INTEGER,
+	t_created TIMESTAMP DEFAULT (datetime('now', 'localtime')),
+	t_modified TIMESTAMP 
 );
  
