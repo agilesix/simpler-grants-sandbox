@@ -103,18 +103,19 @@ class DeliveryMetricsDataLoader:
 		if not isinstance(item, dict):
 			return None
 
-		# extraction
+		# extract guid
 		quad_guid = item.get('quad_id')
-		quad = {
-			'guid': quad_guid,
-			'name': item.get('quad_name'),
-			'start_date': item.get('quad_start'),
-			'end_date': item.get('quad_end'),
-			'duration': item.get('quad_length')
-		}
 
 		# save to unique map
-		if quad_guid is not None:
+		if quad_guid is not None and quad_guid not in self.unique_quads:
+
+			quad = {
+				'guid': quad_guid,
+				'name': item.get('quad_name'),
+				'start_date': item.get('quad_start'),
+				'end_date': item.get('quad_end'),
+				'duration': item.get('quad_length')
+			}
 			self.unique_quads[quad_guid] = quad
 
 		return quad_guid
@@ -126,16 +127,19 @@ class DeliveryMetricsDataLoader:
 		if not isinstance(item, dict):
 			return None
 
-		# extraction
+		# extract guid
 		deliverable_guid = self.removePrefixFromGuid(item.get('deliverable_url'))
-		deliverable = {
-			'guid': deliverable_guid,
-			'title': item.get('deliverable_title'),
-			'pillar': item.get('deliverable_pillar') 
-		}
 
 		# save to unique map
-		if deliverable_guid is not None:
+		if deliverable_guid is not None and deliverable_guid not in self.unique_deliverables:
+		
+			deliverable = {
+				'guid': deliverable_guid,
+				'title': item.get('deliverable_title'),
+				'pillar': item.get('deliverable_pillar'),
+				'quad_guid': item.get('quad_id'),
+				'quad_id': None
+			}
 			self.unique_deliverables[deliverable_guid] = deliverable
 
 		return deliverable_guid
@@ -147,18 +151,22 @@ class DeliveryMetricsDataLoader:
 		if not isinstance(item, dict):
 			return None
 
-		# extraction
+		# extract guid
 		sprint_guid = item.get('sprint_id')
-		sprint = {
-			'guid': sprint_guid,
-			'name': item.get('sprint_name'), 
-			'start_date': item.get('sprint_start'), 
-			'end_date': item.get('sprint_end'),
-			'duration': item.get('sprint_length')
-		}
+
 
 		# save to unique map
-		if sprint_guid is not None:
+		if sprint_guid is not None and sprint_guid not in self.unique_sprints:
+			
+			sprint = {
+				'guid': sprint_guid,
+				'name': item.get('sprint_name'), 
+				'start_date': item.get('sprint_start'), 
+				'end_date': item.get('sprint_end'),
+				'duration': item.get('sprint_length'),
+				'quad_guid': item.get('quad_id'),
+				'quad_id': None
+			}
 			self.unique_sprints[sprint_guid] = sprint
 
 		return sprint_guid
@@ -170,15 +178,16 @@ class DeliveryMetricsDataLoader:
 		if not isinstance(item, dict):
 			return None
 
-		# extraction
+		# extract guid
 		epic_guid = self.removePrefixFromGuid(item.get('epic_url'))
-		epic = {
-			'guid': epic_guid,
-			'title': item.get('epic_title') 
-		}
 
 		# save to unique map
-		if epic_guid is not None:
+		if epic_guid is not None and epic_guid not in self.unique_epics:
+
+			epic = {
+				'guid': epic_guid,
+				'title': item.get('epic_title') 
+			}
 			self.unique_epics[epic_guid] = epic
 
 		return epic_guid
@@ -241,9 +250,13 @@ class DeliveryMetricsDataLoader:
 
 		print("persisting data")
 
-		# write each quad to the db
+		# for each quad
 		for guid, quad in self.unique_quads.items():
+
+			# write to db
 			quad_id = quadModel.syncQuad(quad)
+
+			# save mapping of guid to db row id
 			if quad_id is not None:
 				quad_guid_map[guid] = quad_id
 				update_count['quads'] += 1
@@ -251,10 +264,19 @@ class DeliveryMetricsDataLoader:
 
 		print("{} quad row(s) updated".format(update_count['quads']))
 
-		# write each deliverable to the db
+		# for each deliverable 
 		for guid, deliverable in self.unique_deliverables.items():
-			new_deliverable = deliverable
-			deliverable_id = deliverableModel.syncDeliverable(deliverable)
+
+			new_deliverable = dict(deliverable)
+
+			# convert guids to ids
+			quad_guid = deliverable.get('quad_guid')
+			new_deliverable['quad_id'] = quad_guid_map.get(quad_guid)
+
+			# write to db
+			deliverable_id = deliverableModel.syncDeliverable(new_deliverable)
+
+			# save mapping of guid to db row id
 			if deliverable_id is not None:
 				deliverable_guid_map[guid] = deliverable_id
 				update_count['deliverables'] += 1
@@ -262,9 +284,19 @@ class DeliveryMetricsDataLoader:
 
 		print("{} deliverable row(s) updated".format(update_count['deliverables']))
 
-		# write each sprint to the db
+		# for each sprint 
 		for guid, sprint in self.unique_sprints.items():
-			sprint_id = sprintModel.syncSprint(sprint)
+
+			new_sprint = dict(sprint)
+
+			# convert guids to ids
+			quad_guid = sprint.get('quad_guid')
+			new_sprint['quad_id'] = quad_guid_map.get(quad_guid)
+
+			# write to db
+			sprint_id = sprintModel.syncSprint(new_sprint)
+
+			# save mapping of guid to db row id
 			if sprint_id is not None:
 				sprint_guid_map[guid] = sprint_id
 				update_count['sprints'] += 1
@@ -272,9 +304,13 @@ class DeliveryMetricsDataLoader:
 
 		print("{} sprint row(s) updated".format(update_count['sprints']))
 
-		# write each epic to the db
+		# for each epic 
 		for guid, epic in self.unique_epics.items():
+
+			# write to db
 			epic_id = epicModel.syncEpic(epic)
+
+			# save mapping of guid to db row id
 			if epic_id is not None:
 				epic_guid_map[guid] = epic_id
 				update_count['epics'] += 1
@@ -282,7 +318,7 @@ class DeliveryMetricsDataLoader:
 
 		print("{} epic row(s) updated".format(update_count['epics']))
 
-		# write each issue to the db
+		# for each issue 
 		for guid, issue in self.unique_issues.items():
 
 			new_issue = dict(issue)
@@ -295,7 +331,10 @@ class DeliveryMetricsDataLoader:
 			del new_issue['epic_guid']
 			del new_issue['sprint_guid']
 
+			# write to db
 			issue_id = issueModel.syncIssue(new_issue)
+
+			# save mapping of guid to db row id
 			if issue_id is not None:
 				update_count['issues'] += 1
 				#print("issue guid '{}' mapped to local db row id {}".format(new_issue.get('guid'), issue_id))
