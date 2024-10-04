@@ -17,25 +17,33 @@ class DeliveryMetricsIssueModel(DeliveryMetricsModel):
 		closed_date = self.formatDate(issue.get('closed_date'))
 		parent_guid = issue.get('parent_guid')
 		epic_id = issue.get('epic_id')
+		sprint_id = issue.get('sprint_id')
 		status = issue.get('status')
 		is_closed = issue.get('is_closed')
-		sprint = issue.get('sprint')
 		effective = self.getEffectiveDate()
 
-		# insert into history dimension table
+		# get cursor to keep open across transactions
+		cursor = self.cursor()
+
+		# insert into dimension table: issue
 		sql_dim = "insert into issue (guid, title, type, points, opened_date, closed_date, parent_issue_guid, epic_id) values (?, ?, ?, ?, ?, ?, ?, ?) on conflict(guid) do update set (title, type, points, opened_date, closed_date, parent_issue_guid, epic_id, t_modified) = (?, ?, ?, ?, ?, ?, ?, current_timestamp) returning id"
 		data_dim = (guid, title, t, points, opened_date, closed_date, parent_guid, epic_id, title, t, points, opened_date, closed_date, parent_guid, epic_id)
-
-		# execute sql but keep cursor open
-		cursor = self.cursor()
 		issue_id = self.executeWithCursor(cursor, sql_dim, data_dim)
 
-		# insert into history fact table
-		sql_fact = "insert into issue_history (issue_id, status, is_closed, effective) values (?, ?, ?, ?) on conflict (issue_id, effective) do update set (status, is_closed, t_modified) = (?, ?, current_timestamp) returning id" 
-		data_fact = (issue_id, status, is_closed, effective, status, is_closed) 
+		# insert into fact table: issue_history
+		# TO DO: do not insert if most recent fact record has same values other than effective date
+		sql_fact1 = "insert into issue_history (issue_id, status, is_closed, effective) values (?, ?, ?, ?) on conflict (issue_id, effective) do update set (status, is_closed, t_modified) = (?, ?, current_timestamp) returning id" 
+		data_fact1 = (issue_id, status, is_closed, effective, status, is_closed) 
+		history_id = self.executeWithCursor(cursor, sql_fact1, data_fact1)
 
-		# execute sql and close cursor 
-		history_id = self.executeWithCursor(cursor, sql_fact, data_fact)
+		# insert into fact table: issue_sprint_map
+		# TO DO: do not insert if most recent fact record has same values other than effective date
+		if sprint_id is not None:
+			sql_fact2 = "insert into issue_sprint_map (issue_id, sprint_id, effective) values (?, ?, ?) on conflict (issue_id, effective) do update set (sprint_id, t_modified) = (?, current_timestamp) returning id"
+			data_fact2 = (issue_id, sprint_id, effective, sprint_id) 
+			map_id = self.executeWithCursor(cursor, sql_fact2, data_fact2)
+
+		# close cursor
 		cursor.close()
 		
 		return issue_id
