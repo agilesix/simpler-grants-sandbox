@@ -105,7 +105,7 @@ class DeliveryMetricsDataLoader:
 			'guid': quad_guid,
 			'name': item.get('quad_name'),
 			'start_date': item.get('quad_start'),
-			'start_end': item.get('quad_end'),
+			'end_date': item.get('quad_end'),
 			'duration': item.get('quad_length')
 		}
 
