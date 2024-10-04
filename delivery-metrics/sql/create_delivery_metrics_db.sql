@@ -21,7 +21,7 @@ CREATE TABLE issue (
 	parent_issue_guid TEXT,
 	epic_id TEXT,
 	sprint_id TEXT,
-	t_created TIMESTAMP DEFAULT (datetime('now', 'localtime')),
+	t_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	t_modified TIMESTAMP 
 );
 
@@ -29,7 +29,7 @@ CREATE TABLE epic (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	guid TEXT UNIQUE NOT NULL,
 	title TEXT NOT NULL,
-	t_created TIMESTAMP DEFAULT (datetime('now', 'localtime')),
+	t_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	t_modified TIMESTAMP 
 );
 
@@ -40,7 +40,7 @@ CREATE TABLE sprint (
 	start_date DATE,
 	end_date DATE,
 	duration INTEGER,
-	t_created TIMESTAMP DEFAULT (datetime('now', 'localtime')),
+	t_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	t_modified TIMESTAMP 
 );
 
@@ -49,7 +49,7 @@ CREATE TABLE deliverable (
 	guid TEXT UNIQUE NOT NULL,
 	title TEXT NOT NULL,
 	pillar TEXT, 
-	t_created TIMESTAMP DEFAULT (datetime('now', 'localtime')),
+	t_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	t_modified TIMESTAMP 
 );
 
@@ -61,7 +61,7 @@ CREATE TABLE quad (
 	start_date DATE,
 	end_date DATE,
 	duration INTEGER,
-	t_created TIMESTAMP DEFAULT (datetime('now', 'localtime')),
+	t_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	t_modified TIMESTAMP 
 );
  
