@@ -2,10 +2,6 @@ from delivery_metrics_model import DeliveryMetricsModel
 
 class DeliveryMetricsEpicModel(DeliveryMetricsModel):
 
-	def __init__(self, dbh):
-		self.dbh = dbh
-
-
 	def syncEpic(self, epic: dict) -> int:
 
 		# validation
@@ -14,10 +10,11 @@ class DeliveryMetricsEpicModel(DeliveryMetricsModel):
 
 		guid = epic.get('guid')
 		title = epic.get('title')
+		deliverable_id = epic.get('deliverable_id')
 
-		sql = "insert into epic(guid, title) values (?, ?) on conflict(guid) do update set (title, t_modified) = (?, current_timestamp) returning id"
-		data = (guid, title, title)
-		row_id = self._execute(sql, data)
+		sql = "insert into epic(guid, title, deliverable_id) values (?, ?, ?) on conflict(guid) do update set (title, deliverable_id, t_modified) = (?, ?, current_timestamp) returning id"
+		data = (guid, title, deliverable_id, title, deliverable_id)
+		row_id = self.execute(sql, data)
 
 		return row_id
 

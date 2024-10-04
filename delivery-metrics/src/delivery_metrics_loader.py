@@ -253,6 +253,7 @@ class DeliveryMetricsDataLoader:
 
 		# write each deliverable to the db
 		for guid, deliverable in self.unique_deliverables.items():
+			new_deliverable = deliverable
 			deliverable_id = deliverableModel.syncDeliverable(deliverable)
 			if deliverable_id is not None:
 				deliverable_guid_map[guid] = deliverable_id

@@ -2,10 +2,6 @@ from delivery_metrics_model import DeliveryMetricsModel
 
 class DeliveryMetricsDeliverableModel(DeliveryMetricsModel):
 
-	def __init__(self, dbh):
-		self.dbh = dbh
-
-
 	def syncDeliverable(self, deliverable: dict) -> int:
 		
 		# validation
@@ -15,10 +11,11 @@ class DeliveryMetricsDeliverableModel(DeliveryMetricsModel):
 		guid = deliverable.get('guid')
 		title = deliverable.get('title')
 		pillar = deliverable.get('pillar')
+		quad_id = deliverable.get('quad_id')
 
-		sql = "insert into deliverable(guid, title, pillar) values (?, ?, ?) on conflict(guid) do update set (title, pillar, t_modified) = (?, ?, current_timestamp) returning id"
-		data = (guid, title, pillar, title, pillar)
-		row_id = self._execute(sql, data)
+		sql = "insert into deliverable(guid, title, pillar, quad_id) values (?, ?, ?, ?) on conflict(guid) do update set (title, pillar, quad_id, t_modified) = (?, ?, ?, current_timestamp) returning id"
+		data = (guid, title, pillar, quad_id, title, pillar, quad_id)
+		row_id = self.execute(sql, data)
 
 		return row_id
 

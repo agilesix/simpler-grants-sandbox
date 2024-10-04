@@ -2,10 +2,6 @@ from delivery_metrics_model import DeliveryMetricsModel
 
 class DeliveryMetricsQuadModel(DeliveryMetricsModel):
 
-	def __init__(self, dbh):
-		self.dbh = dbh
-
-
 	def syncQuad(self, quad: dict) -> int:
 	
 		# validation
@@ -20,7 +16,7 @@ class DeliveryMetricsQuadModel(DeliveryMetricsModel):
 
 		sql = "insert into quad(guid, name, start_date, end_date, duration) values (?, ?, ?, ?, ?) on conflict(guid) do update set (name, start_date, end_date, duration, t_modified) = (?, ?, ?, ?, current_timestamp) returning id"
 		data = (guid, name, start, end, duration, name, start, end, duration)
-		row_id = self._execute(sql, data)
+		row_id = self.execute(sql, data)
 
 		return row_id
 

@@ -9,6 +9,10 @@ class DeliveryMetricsDatabase:
 		self.config = config
 		self._dbConnection = None
 
+	def getEffectiveDate(self) -> str:
+
+		return self.config.EFFECTIVE_DATE
+
 
 	def connection(self) -> sqlite3.Connection:
 
