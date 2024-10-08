@@ -26,14 +26,14 @@ class DeliveryMetricsIssueModel(DeliveryMetricsModel):
 		cursor = self.cursor()
 
 		# insert into dimension table: issue
-		sql_dim = "insert into issue (guid, title, type, points, opened_date, closed_date, parent_issue_guid, epic_id) values (?, ?, ?, ?, ?, ?, ?, ?) on conflict(guid) do update set (title, type, points, opened_date, closed_date, parent_issue_guid, epic_id, t_modified) = (?, ?, ?, ?, ?, ?, ?, current_timestamp) returning id"
-		data_dim = (guid, title, t, points, opened_date, closed_date, parent_guid, epic_id, title, t, points, opened_date, closed_date, parent_guid, epic_id)
+		sql_dim = "insert into issue (guid, title, type, opened_date, closed_date, parent_issue_guid, epic_id) values (?, ?, ?, ?, ?, ?, ?) on conflict(guid) do update set (title, type, opened_date, closed_date, parent_issue_guid, epic_id, t_modified) = (?, ?, ?, ?, ?, ?, current_timestamp) returning id"
+		data_dim = (guid, title, t, opened_date, closed_date, parent_guid, epic_id, title, t, opened_date, closed_date, parent_guid, epic_id)
 		issue_id = self.executeWithCursor(cursor, sql_dim, data_dim)
 
 		# insert into fact table: issue_history
 		# TODO: do not insert if most recent fact record has same values other than effective date
-		sql_fact1 = "insert into issue_history (issue_id, status, is_closed, d_effective) values (?, ?, ?, ?) on conflict (issue_id, d_effective) do update set (status, is_closed, t_modified) = (?, ?, current_timestamp) returning id" 
-		data_fact1 = (issue_id, status, is_closed, effective, status, is_closed) 
+		sql_fact1 = "insert into issue_history (issue_id, status, is_closed, points, d_effective) values (?, ?, ?, ?, ?) on conflict (issue_id, d_effective) do update set (status, is_closed, points, t_modified) = (?, ?, ?, current_timestamp) returning id" 
+		data_fact1 = (issue_id, status, is_closed, points, effective, status, is_closed, points) 
 		history_id = self.executeWithCursor(cursor, sql_fact1, data_fact1)
 
 		# insert into fact table: issue_sprint_map

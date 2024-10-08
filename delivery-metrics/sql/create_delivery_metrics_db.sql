@@ -34,7 +34,6 @@ CREATE TABLE issue (
 	guid TEXT UNIQUE NOT NULL,
 	title TEXT NOT NULL,
 	type TEXT NOT NULL,
-	points INTEGER NOT NULL DEFAULT 0,
 	opened_date DATE,
 	closed_date DATE,
 	parent_issue_guid TEXT,
@@ -48,6 +47,7 @@ CREATE TABLE issue_history (
 	issue_id INTEGER NOT NULL,
 	status TEXT NOT NULL,
 	is_closed INTEGER NOT NULL,
+	points INTEGER NOT NULL DEFAULT 0,
 	d_effective DATE NOT NULL,
 	t_modified TIMESTAMP,
 	UNIQUE(issue_id, d_effective)
