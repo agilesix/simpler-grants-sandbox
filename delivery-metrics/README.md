@@ -14,3 +14,6 @@ $ cd simpler-grants-sandbox/delivery-metrics/src/
 $ ./load_json.py ../json/example-01.json
 ```
 
+### Step 3 - View test data
+Use a SQLite browser, such as [https://sqlitebrowser.org](DB Browser for SQLite), to connect to `db/delivery_metrics.db`.
+
