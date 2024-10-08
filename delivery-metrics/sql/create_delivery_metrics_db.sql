@@ -48,18 +48,18 @@ CREATE TABLE issue_history (
 	issue_id INTEGER NOT NULL,
 	status TEXT NOT NULL,
 	is_closed INTEGER NOT NULL,
-	effective DATE NOT NULL,
+	d_effective DATE NOT NULL,
 	t_modified TIMESTAMP,
-	UNIQUE(issue_id, effective)
+	UNIQUE(issue_id, d_effective)
 );
 
 CREATE TABLE issue_sprint_map (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	issue_id INTEGER NOT NULL,
 	sprint_id INTEGER NOT NULL,
-	effective DATE NOT NULL,
+	d_effective DATE NOT NULL,
 	t_modified TIMESTAMP,
-	UNIQUE(issue_id, effective)
+	UNIQUE(issue_id, d_effective)
 );
 
 CREATE TABLE sprint (
