@@ -15,5 +15,5 @@ $ ./load_json.py ../json/example-01.json
 ```
 
 ### Step 3 - View test data
-Use a SQLite browser, such as [https://sqlitebrowser.org](DB Browser for SQLite), to connect to `db/delivery_metrics.db`.
+Use a SQLite browser, such as [DB Browser for SQLite](https://sqlitebrowser.org), to connect to `db/delivery_metrics.db`.
 
