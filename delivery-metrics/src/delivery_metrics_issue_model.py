@@ -32,14 +32,14 @@ class DeliveryMetricsIssueModel(DeliveryMetricsModel):
 
 		# insert into fact table: issue_history
 		# TO DO: do not insert if most recent fact record has same values other than effective date
-		sql_fact1 = "insert into issue_history (issue_id, status, is_closed, effective) values (?, ?, ?, ?) on conflict (issue_id, effective) do update set (status, is_closed, t_modified) = (?, ?, current_timestamp) returning id" 
+		sql_fact1 = "insert into issue_history (issue_id, status, is_closed, d_effective) values (?, ?, ?, ?) on conflict (issue_id, d_effective) do update set (status, is_closed, t_modified) = (?, ?, current_timestamp) returning id" 
 		data_fact1 = (issue_id, status, is_closed, effective, status, is_closed) 
 		history_id = self.executeWithCursor(cursor, sql_fact1, data_fact1)
 
 		# insert into fact table: issue_sprint_map
 		# TO DO: do not insert if most recent fact record has same values other than effective date
 		if sprint_id is not None:
-			sql_fact2 = "insert into issue_sprint_map (issue_id, sprint_id, effective) values (?, ?, ?) on conflict (issue_id, effective) do update set (sprint_id, t_modified) = (?, current_timestamp) returning id"
+			sql_fact2 = "insert into issue_sprint_map (issue_id, sprint_id, d_effective) values (?, ?, ?) on conflict (issue_id, d_effective) do update set (sprint_id, t_modified) = (?, current_timestamp) returning id"
 			data_fact2 = (issue_id, sprint_id, effective, sprint_id) 
 			map_id = self.executeWithCursor(cursor, sql_fact2, data_fact2)
 

@@ -1,10 +1,24 @@
+import time
+
 class DeliveryMetricsConfig:
 
-	def __init__(self):
+	def __init__(self, datestamp):
 
 		# path to sqlite db instance
-		self.DB_PATH = "../db/delivery_metrics.db"
+		self._DB_PATH = "../db/delivery_metrics.db"
 
-		# TODO: hard coded now; this will be set from command line arg
-		self.EFFECTIVE_DATE = "2024-10-04"
+		# datestamp to use as "effective date" when writing facts to db
+		if isinstance(datestamp, time.struct_time):
+			self._EFFECTIVE_DATE = time.strftime("%Y-%m-%d", datestamp)
+		else:
+			t = time.gmtime()
+			self._EFFECTIVE_DATE = time.strftime("%Y-%m-%d", t)
 
+
+	def dbPath(self):
+		return self._DB_PATH
+
+	
+	def effectiveDate(self):
+		return self._EFFECTIVE_DATE
+	

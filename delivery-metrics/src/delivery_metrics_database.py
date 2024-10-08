@@ -11,18 +11,18 @@ class DeliveryMetricsDatabase:
 
 	def getEffectiveDate(self) -> str:
 
-		return self.config.EFFECTIVE_DATE
+		return self.config.effectiveDate()
 
 
 	def connection(self) -> sqlite3.Connection:
 
 		if not self._dbConnection:
 			try:
-				db_uri = "file:{}?mode=rw".format(self.config.DB_PATH)
+				db_uri = "file:{}?mode=rw".format(self.config.dbPath())
 				print("connecting to database '{}'".format(db_uri))
 				self._dbConnection = sqlite3.connect(db_uri, uri=True)
 			except sqlite3.Error as error:
-				print("WARNING: {}: {}".format(error, self.config.DB_PATH))
+				print("WARNING: {}: {}".format(error, self.config.dbPath()))
 
 		return self._dbConnection
 	

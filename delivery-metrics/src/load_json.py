@@ -3,6 +3,11 @@
 from argparse import ArgumentParser, FileType
 from delivery_metrics_config import DeliveryMetricsConfig
 from delivery_metrics_loader import DeliveryMetricsDataLoader
+import time
+
+def parseDateArg(d):
+	return time.strptime(d, '%Y%m%d')
+
 
 if __name__ == "__main__":
 
@@ -10,17 +15,20 @@ if __name__ == "__main__":
 	parser = ArgumentParser(description="Load a json file into the delivery metrics database")
 	group = parser.add_mutually_exclusive_group(required=True)
 	group.add_argument("file", type=FileType("r"), nargs="?", metavar="FILEPATH", help="path of json file to load")
+	parser.add_argument("-e", dest="yyyymmdd", type=parseDateArg, help="effective date to apply to records in json file")
 
 	# get command line args
 	args = parser.parse_args()
 	args.file.close()
+	#print("effective date = {}".format(args.yyyymmdd))
+	#print("effective date type = {}".format(str(type(args.yyyymmdd))))
 
 	# initialize config object
-	config = DeliveryMetricsConfig()
+	config = DeliveryMetricsConfig(args.yyyymmdd)
 
 	# load data
 	print("running data loader...")
-	loader = DeliveryMetricsDataLoader(config, args.file.name)
-	loader.loadData()
+	#loader = DeliveryMetricsDataLoader(config, args.file.name)
+	#loader.loadData()
 	print("data loader is done")
 
