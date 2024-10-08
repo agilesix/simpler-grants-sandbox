@@ -20,15 +20,13 @@ if __name__ == "__main__":
 	# get command line args
 	args = parser.parse_args()
 	args.file.close()
-	#print("effective date = {}".format(args.yyyymmdd))
-	#print("effective date type = {}".format(str(type(args.yyyymmdd))))
 
 	# initialize config object
 	config = DeliveryMetricsConfig(args.yyyymmdd)
 
 	# load data
-	print("running data loader...")
-	#loader = DeliveryMetricsDataLoader(config, args.file.name)
-	#loader.loadData()
+	print("running data loader with effective date {}".format(config.effectiveDate()))
+	loader = DeliveryMetricsDataLoader(config, args.file.name)
+	loader.loadData()
 	print("data loader is done")
 
