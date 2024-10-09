@@ -10,7 +10,7 @@ Slowly changing data that are pertinent to as-is and as-was delivery metrics cal
 * `issue_history`
 * `issue_sprint_map`
 
-The tables utilize a datestamp column (`d_effective`) to record the effective date of each state as it is captured change over time.
+The tables utilize a datestamp column (`d_effective`) to record the effective date of each state as state snapshots are captured over time.
 
 ## Entity Relationship Diagram
 The logical model is described in [schema-ERD.png](./schema-ERD.png)
