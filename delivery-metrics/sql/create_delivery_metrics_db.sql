@@ -1,7 +1,9 @@
 # drop tables
 
 DROP TABLE IF EXISTS deliverable;
+DROP TABLE IF EXISTS deliverable_quad_map;
 DROP TABLE IF EXISTS epic;
+DROP TABLE IF EXISTS epic_deliverable_map;
 DROP TABLE IF EXISTS issue;
 DROP TABLE IF EXISTS issue_history;
 DROP TABLE IF EXISTS issue_sprint_map;
@@ -15,18 +17,34 @@ CREATE TABLE deliverable (
 	guid TEXT UNIQUE NOT NULL,
 	title TEXT NOT NULL,
 	pillar TEXT, 
-	quad_id INTEGER,
 	t_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	t_modified TIMESTAMP 
+);
+
+CREATE TABLE deliverable_quad_map (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	deliverable_id INTEGER NOT NULL,
+	quad_id INTEGER,
+	d_effective DATE NOT NULL,
+	t_modified TIMESTAMP,
+	UNIQUE(deliverable_id, d_effective)
 );
 
 CREATE TABLE epic (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	guid TEXT UNIQUE NOT NULL,
 	title TEXT NOT NULL,
-	deliverable_id INTEGER,
 	t_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	t_modified TIMESTAMP 
+);
+
+CREATE TABLE epic_deliverable_map (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	epic_id INTEGER NOT NULL,
+	deliverable_id INTEGER,
+	d_effective DATE NOT NULL,
+	t_modified TIMESTAMP,
+	UNIQUE(epic_id, d_effective)
 );
 
 CREATE TABLE issue (
