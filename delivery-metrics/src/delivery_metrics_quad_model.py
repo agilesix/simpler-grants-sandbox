@@ -22,7 +22,7 @@ class DeliveryMetricsQuadModel(DeliveryMetricsModel):
 		# insert into dimension table: quad
 		sql = "insert into quad(guid, name, start_date, end_date, duration) values (?, ?, ?, ?, ?) on conflict(guid) do nothing returning id"
 		data = (guid, name, start, end, duration)
-		quad_id = self.insert(sql, data)
+		quad_id = self.insertWithoutCursor(sql, data)
 
 		# update return value
 		if quad_id is not None:

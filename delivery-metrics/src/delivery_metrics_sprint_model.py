@@ -23,7 +23,7 @@ class DeliveryMetricsSprintModel(DeliveryMetricsModel):
 		# insert into dimension table: sprint
 		sql = "insert into sprint(guid, name, start_date, end_date, duration, quad_id) values (?, ?, ?, ?, ?, ?) on conflict(guid) do nothing returning id"
 		data = (guid, name, start, end, duration, quad_id)
-		sprint_id = self.insert(sql, data)
+		sprint_id = self.insertWithoutCursor(sql, data)
 
 		# update return value
 		if sprint_id is not None:

@@ -22,7 +22,7 @@ class DeliveryMetricsModel:
 		return self._dbh.cursor()
 
 
-	def insert(self, sql: str, data: tuple) -> int:
+	def insertWithoutCursor(self, sql: str, data: tuple) -> int:
 
 		cursor = self._dbh.cursor()
 
