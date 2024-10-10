@@ -1,3 +1,4 @@
+from delivery_metrics_model import DeliveryMetricsChangeType
 from delivery_metrics_model import DeliveryMetricsModel
 
 class DeliveryMetricsIssueModel(DeliveryMetricsModel):
@@ -7,6 +8,9 @@ class DeliveryMetricsIssueModel(DeliveryMetricsModel):
 		# validation
 		if not isinstance(issue, dict):
 			return None
+
+		# initialize return value
+		change_type = DeliveryMetricsChangeType.NONE
 
 		# get values needed for sql statement
 		guid = issue.get('guid')
@@ -26,25 +30,39 @@ class DeliveryMetricsIssueModel(DeliveryMetricsModel):
 		cursor = self.cursor()
 
 		# insert into dimension table: issue
-		sql_dim = "insert into issue (guid, title, type, opened_date, closed_date, parent_issue_guid, epic_id) values (?, ?, ?, ?, ?, ?, ?) on conflict(guid) do update set (title, type, opened_date, closed_date, parent_issue_guid, epic_id, t_modified) = (?, ?, ?, ?, ?, ?, current_timestamp) returning id"
-		data_dim = (guid, title, t, opened_date, closed_date, parent_guid, epic_id, title, t, opened_date, closed_date, parent_guid, epic_id)
-		issue_id = self.executeWithCursor(cursor, sql_dim, data_dim)
+		sql_dim = "insert into issue (guid, title, type, opened_date, closed_date, parent_issue_guid, epic_id) values (?, ?, ?, ?, ?, ?, ?) on conflict(guid) do nothing returning id"
+		data_dim = (guid, title, t, opened_date, closed_date, parent_guid, epic_id)
+		issue_id = self.insertWithCursor(cursor, sql_dim, data_dim)
+
+		# update return value
+		if issue_id is not None:
+			change_type = DeliveryMetricsChangeType.INSERT
+
+		# TODO: select and update
+		if issue_id is None:
+			issue_id = None
+			#change_type = DeliveryMetricsChangeType.UPDATE
 
 		# insert into fact table: issue_history
-		# TODO: do not insert if most recent fact record has same values other than effective date
-		sql_fact1 = "insert into issue_history (issue_id, status, is_closed, points, d_effective) values (?, ?, ?, ?, ?) on conflict (issue_id, d_effective) do update set (status, is_closed, points, t_modified) = (?, ?, ?, current_timestamp) returning id" 
-		data_fact1 = (issue_id, status, is_closed, points, effective, status, is_closed, points) 
-		history_id = self.executeWithCursor(cursor, sql_fact1, data_fact1)
+		if issue_id is not None:
+			sql_fact1 = "insert into issue_history (issue_id, status, is_closed, points, d_effective) values (?, ?, ?, ?, ?) on conflict (issue_id, d_effective) do update set (status, is_closed, points, t_modified) = (?, ?, ?, current_timestamp) returning id" 
+			data_fact1 = (issue_id, status, is_closed, points, effective, status, is_closed, points) 
+			history_id = self.insertWithCursor(cursor, sql_fact1, data_fact1)
 
 		# insert into fact table: issue_sprint_map
-		# TODO: do not insert if most recent fact record has same values other than effective date
-		sql_fact2 = "insert into issue_sprint_map (issue_id, sprint_id, d_effective) values (?, ?, ?) on conflict (issue_id, d_effective) do update set (sprint_id, t_modified) = (?, current_timestamp) returning id"
-		data_fact2 = (issue_id, sprint_id, effective, sprint_id) 
-		map_id = self.executeWithCursor(cursor, sql_fact2, data_fact2)
+		if issue_id is not None:
+			sql_fact2 = "insert into issue_sprint_map (issue_id, sprint_id, d_effective) values (?, ?, ?) on conflict (issue_id, d_effective) do update set (sprint_id, t_modified) = (?, current_timestamp) returning id"
+			data_fact2 = (issue_id, sprint_id, effective, sprint_id) 
+			map_id = self.insertWithCursor(cursor, sql_fact2, data_fact2)
 
 		# close cursor
 		cursor.close()
 		
-		return issue_id
+		return issue_id, change_type
 
+
+		'''
+		# TO DO: select and update
+		sql_dim = "insert into issue (guid, title, type, opened_date, closed_date, parent_issue_guid, epic_id) values (?, ?, ?, ?, ?, ?, ?) on conflict(guid) do update set (title, type, opened_date, closed_date, parent_issue_guid, epic_id, t_modified) = (?, ?, ?, ?, ?, ?, current_timestamp) returning id"
+		'''
 

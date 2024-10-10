@@ -1,3 +1,4 @@
+from enum import Enum
 
 class DeliveryMetricsModel:
 
@@ -21,24 +22,36 @@ class DeliveryMetricsModel:
 		return self._dbh.cursor()
 
 
-	def execute(self, sql: str, data: tuple) -> int:
+	def insert(self, sql: str, data: tuple) -> int:
 
 		cursor = self._dbh.cursor()
+
 		last_row_id_tuple = cursor.execute(sql, data).fetchone()
+		last_row_id = last_row_id_tuple[0] if isinstance(last_row_id_tuple, tuple) else None
+
 		self._dbh.commit()
 		cursor.close()
 
-		return last_row_id_tuple[0]
+		return last_row_id 
 
 
-	def executeWithCursor(self, cursor, sql: str, data: tuple) -> int:
+	def insertWithCursor(self, cursor, sql: str, data: tuple) -> int:
 
 		last_row_id_tuple = cursor.execute(sql, data).fetchone()
+		last_row_id = last_row_id_tuple[0] if isinstance(last_row_id_tuple, tuple) else None
+
 		self._dbh.commit()
 
-		return last_row_id_tuple[0]
+		return last_row_id 
 		
 
 	def getEffectiveDate(self) -> str:
 
 		return self._dbh.getEffectiveDate()
+
+
+class DeliveryMetricsChangeType(Enum):
+	NONE = 0
+	INSERT = 1
+	UPDATE = 2
+	

@@ -5,6 +5,7 @@ from delivery_metrics_database import DeliveryMetricsDatabase
 from delivery_metrics_deliverable_model import DeliveryMetricsDeliverableModel
 from delivery_metrics_epic_model import DeliveryMetricsEpicModel
 from delivery_metrics_issue_model import DeliveryMetricsIssueModel
+from delivery_metrics_model import DeliveryMetricsChangeType
 from delivery_metrics_sprint_model import DeliveryMetricsSprintModel
 from delivery_metrics_quad_model import DeliveryMetricsQuadModel
 from typing import TextIO
@@ -228,6 +229,7 @@ class DeliveryMetricsDataLoader:
 
 	def _persistData(self):
 
+		# initialize models
 		db = DeliveryMetricsDatabase(self.config)
 		deliverableModel = DeliveryMetricsDeliverableModel(db)
 		epicModel = DeliveryMetricsEpicModel(db)
@@ -235,18 +237,21 @@ class DeliveryMetricsDataLoader:
 		sprintModel = DeliveryMetricsSprintModel(db)
 		quadModel = DeliveryMetricsQuadModel(db)
 
+		# initialize maps
 		quad_guid_map = {}
 		deliverable_guid_map = {}
 		sprint_guid_map = {}
 		epic_guid_map = {}
 
-		update_count = {
+		# initialize status counters
+		insert_count = {
 			'quads': 0,
 			'deliverables': 0,
 			'sprints': 0,
 			'epics': 0,
 			'issues': 0
 		}
+		update_count = dict(insert_count)
 
 		print("persisting data")
 
@@ -254,15 +259,21 @@ class DeliveryMetricsDataLoader:
 		for guid, quad in self.unique_quads.items():
 
 			# write to db
-			quad_id = quadModel.syncQuad(quad)
+			quad_id, change_type = quadModel.syncQuad(quad)
 
 			# save mapping of guid to db row id
 			if quad_id is not None:
 				quad_guid_map[guid] = quad_id
-				update_count['quads'] += 1
-				#print("quad '{}' mapped to local db row id {}".format(guid, quad_id))
 
-		print("{} quad row(s) updated".format(update_count['quads']))
+			# save change type for reporting purposes
+			if change_type == DeliveryMetricsChangeType.INSERT:
+				insert_count['quads'] += 1
+			elif change_type == DeliveryMetricsChangeType.UPDATE:
+				update_count['quads'] += 1
+
+		# summarize results of quad inserts/updates
+		print("quad row(s) inserted: {}".format(insert_count['quads']))
+		print("quad row(s) updated: {}".format(update_count['quads']))
 
 		# for each deliverable 
 		for guid, deliverable in self.unique_deliverables.items():
@@ -274,15 +285,21 @@ class DeliveryMetricsDataLoader:
 			new_deliverable['quad_id'] = quad_guid_map.get(quad_guid)
 
 			# write to db
-			deliverable_id = deliverableModel.syncDeliverable(new_deliverable)
+			deliverable_id, change_type = deliverableModel.syncDeliverable(new_deliverable)
 
 			# save mapping of guid to db row id
 			if deliverable_id is not None:
 				deliverable_guid_map[guid] = deliverable_id
-				update_count['deliverables'] += 1
-				#print("deliverable '{}' mapped to local db row id {}".format(guid, deliverable_id))
 
-		print("{} deliverable row(s) updated".format(update_count['deliverables']))
+			# save change type for reporting purposes
+			if change_type == DeliveryMetricsChangeType.INSERT:
+				insert_count['deliverables'] += 1
+			elif change_type == DeliveryMetricsChangeType.UPDATE:
+				update_count['deliverables'] += 1
+
+		# summarize results of deliverable inserts/updates
+		print("deliverable row(s) inserted: {}".format(insert_count['deliverables']))
+		print("deliverable row(s) updated: {}".format(update_count['deliverables']))
 
 		# for each sprint 
 		for guid, sprint in self.unique_sprints.items():
@@ -294,29 +311,41 @@ class DeliveryMetricsDataLoader:
 			new_sprint['quad_id'] = quad_guid_map.get(quad_guid)
 
 			# write to db
-			sprint_id = sprintModel.syncSprint(new_sprint)
+			sprint_id, change_type = sprintModel.syncSprint(new_sprint)
 
 			# save mapping of guid to db row id
 			if sprint_id is not None:
 				sprint_guid_map[guid] = sprint_id
-				update_count['sprints'] += 1
-				#print("sprint '{}' mapped to local db row id {}".format(guid, sprint_id))
 
-		print("{} sprint row(s) updated".format(update_count['sprints']))
+			# save change type for reporting purposes
+			if change_type == DeliveryMetricsChangeType.INSERT:
+				insert_count['sprints'] += 1
+			elif change_type == DeliveryMetricsChangeType.UPDATE:
+				update_count['sprints'] += 1
+
+		# summarize results of sprint inserts/updates
+		print("sprint row(s) inserted: {}".format(insert_count['sprints']))
+		print("sprint row(s) updated: {}".format(update_count['sprints']))
 
 		# for each epic 
 		for guid, epic in self.unique_epics.items():
 
 			# write to db
-			epic_id = epicModel.syncEpic(epic)
+			epic_id, change_type = epicModel.syncEpic(epic)
 
 			# save mapping of guid to db row id
 			if epic_id is not None:
 				epic_guid_map[guid] = epic_id
-				update_count['epics'] += 1
-				#print("epic '{}' mapped to local db row id {}".format(guid, epic_id))
 
-		print("{} epic row(s) updated".format(update_count['epics']))
+			# save change type for reporting purposes
+			if change_type == DeliveryMetricsChangeType.INSERT:
+				insert_count['epics'] += 1
+			elif change_type == DeliveryMetricsChangeType.UPDATE:
+				update_count['epics'] += 1
+
+		# summarize results of epic inserts/updates
+		print("epic row(s) inserted: {}".format(insert_count['epics']))
+		print("epic row(s) updated: {}".format(update_count['epics']))
 
 		# for each issue 
 		for guid, issue in self.unique_issues.items():
@@ -332,14 +361,17 @@ class DeliveryMetricsDataLoader:
 			del new_issue['sprint_guid']
 
 			# write to db
-			issue_id = issueModel.syncIssue(new_issue)
+			issue_id, change_type = issueModel.syncIssue(new_issue)
 
-			# save mapping of guid to db row id
-			if issue_id is not None:
+			# save change type for reporting purposes
+			if change_type == DeliveryMetricsChangeType.INSERT:
+				insert_count['issues'] += 1
+			elif change_type == DeliveryMetricsChangeType.UPDATE:
 				update_count['issues'] += 1
-				#print("issue guid '{}' mapped to local db row id {}".format(new_issue.get('guid'), issue_id))
 
-		print("{} issue row(s) updated".format(update_count['issues']))
+		# summarize results of epic inserts/updates
+		print("issue row(s) inserted: {}".format(insert_count['issues']))
+		print("issue row(s) updated: {}".format(update_count['issues']))
 
 		# close db connection
 		db.disconnect()
