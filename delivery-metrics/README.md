@@ -15,13 +15,12 @@ $ sqlite3 ./db/delivery_metrics.db < ./sql/create_delivery_metrics_db.sql
 
 ### Step 3 - Load test data into the database
 ```
-$ cd src
-$ ./load_json.py ../json/example-01.json
+$ ./src/load_json.py ./json/example-01.json
 ```
 
 Alternate command line syntax, for specifying the "effective date" to apply to each record processed by the loader. If not specified, the effective date defaults to today (GMT).
 ```
-$ ./load_json.py -e 20241007 ../json/example-01.json
+$ ./src/load_json.py -e 20241007 ./json/example-01.json
 ```
 
 ### Step 3 - View test data
