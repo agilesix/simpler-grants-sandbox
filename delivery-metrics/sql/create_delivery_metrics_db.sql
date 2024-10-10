@@ -63,7 +63,7 @@ CREATE TABLE issue (
 CREATE TABLE issue_history (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	issue_id INTEGER NOT NULL,
-	status TEXT NOT NULL,
+	status TEXT,
 	is_closed INTEGER NOT NULL,
 	points INTEGER NOT NULL DEFAULT 0,
 	d_effective DATE NOT NULL,
