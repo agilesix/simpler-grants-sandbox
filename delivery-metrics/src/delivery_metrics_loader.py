@@ -75,6 +75,8 @@ class DeliveryMetricsDataLoader:
 		self.unique_issues = {}
 
 		print("parsing json")
+		print("found {} items to process".format(str(len(self.data))))
+
 		for item in self.data:
 
 			# validate
