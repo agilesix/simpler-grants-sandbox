@@ -3,6 +3,7 @@
 from argparse import ArgumentParser, FileType
 from delivery_metrics_config import DeliveryMetricsConfig
 from delivery_metrics_loader import DeliveryMetricsDataLoader
+import os.path 
 import time
 
 def parseDateArg(d):
@@ -20,13 +21,14 @@ if __name__ == "__main__":
 	# get command line args
 	args = parser.parse_args()
 	args.file.close()
+	file_path = os.path.abspath(args.file.name)
 
 	# initialize config object
 	config = DeliveryMetricsConfig(args.yyyymmdd)
 
 	# load data
-	print("running data loader with effective date {}".format(config.effectiveDate()))
-	loader = DeliveryMetricsDataLoader(config, args.file.name)
+	print("* running data loader with effective date {}".format(config.effectiveDate()))
+	loader = DeliveryMetricsDataLoader(config, file_path)
 	loader.loadData()
-	print("data loader is done")
+	print("* data loader is done!")
 
