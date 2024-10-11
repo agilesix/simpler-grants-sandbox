@@ -3,14 +3,29 @@ from delivery_metrics_model import DeliveryMetricsModel
 
 class DeliveryMetricsSprintModel(DeliveryMetricsModel):
 
-	def syncSprint(self, sprint: dict) -> int:
+	def syncSprint(self, sprint: dict) -> (int, DeliveryMetricsChangeType):
 
 		# validation
 		if not isinstance(sprint, dict):
-			return None
+			return None, DeliveryMetricsChangeType.NONE
 
 		# initialize return value
 		change_type = DeliveryMetricsChangeType.NONE
+
+		# attempt insert into dimension table
+		sprint_id = self._insertDimensions(sprint)
+		if sprint_id is not None:
+			change_type = DeliveryMetricsChangeType.INSERT
+
+		# TODO: if insert failed, select and update
+		if sprint_id is None:
+			sprint_id = None
+			#change_type = DeliveryMetricsChangeType.UPDATE
+
+		return sprint_id, change_type
+
+	
+	def _insertDimensions(self, sprint) -> int:
 
 		# get values needed for sql statement
 		guid = sprint.get('guid')
@@ -25,16 +40,10 @@ class DeliveryMetricsSprintModel(DeliveryMetricsModel):
 		data = (guid, name, start, end, duration, quad_id)
 		sprint_id = self.insertWithoutCursor(sql, data)
 
-		# update return value
-		if sprint_id is not None:
-			change_type = DeliveryMetricsChangeType.INSERT
+		return sprint_id
 
-		# TODO: select and update
-		if sprint_id is None:
-			sprint_id = None
-			#change_type = DeliveryMetricsChangeType.UPDATE
 
-		return sprint_id, change_type
+
 
 
 		'''

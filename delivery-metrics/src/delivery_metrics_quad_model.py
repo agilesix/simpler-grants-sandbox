@@ -3,14 +3,29 @@ from delivery_metrics_model import DeliveryMetricsModel
 
 class DeliveryMetricsQuadModel(DeliveryMetricsModel):
 
-	def syncQuad(self, quad: dict) -> int:
+	def syncQuad(self, quad: dict) -> (int, DeliveryMetricsChangeType):
 	
 		# validation
 		if not isinstance(quad, dict):
-			return None
+			return None, DeliveryMetricsChangeType.NONE
 
 		# initialize return value
-		change_type = DeliveryMetricsChangeType.NONE
+		change_type = DeliveryMetricsChangeType.NONE 
+
+		# attempt insert
+		quad_id = self._insertDimensions(quad)
+		if quad_id is not None:
+			change_type = DeliveryMetricsChangeType.INSERT 
+			
+		# TODO: if insert failed, then select and update
+		if quad_id is None:
+			quad_id = None
+			#change_type = DeliveryMetricsChangeType.UPDATE
+
+		return quad_id, change_type
+
+
+	def _insertDimensions(self, quad: dict) -> int:
 
 		# get values needed for sql statement
 		guid = quad.get('guid')
@@ -24,16 +39,8 @@ class DeliveryMetricsQuadModel(DeliveryMetricsModel):
 		data = (guid, name, start, end, duration)
 		quad_id = self.insertWithoutCursor(sql, data)
 
-		# update return value
-		if quad_id is not None:
-			change_type = DeliveryMetricsChangeType.INSERT
+		return quad_id
 
-		# TODO: select and update
-		if quad_id is None:
-			quad_id = None
-			#change_type = DeliveryMetricsChangeType.UPDATE
-
-		return quad_id, change_type
 
 
 		'''
