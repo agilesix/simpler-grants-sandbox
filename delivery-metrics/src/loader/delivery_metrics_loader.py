@@ -189,7 +189,8 @@ class DeliveryMetricsDataLoader:
 
 			epic = {
 				'guid': epic_guid,
-				'title': item.get('epic_title') 
+				'title': item.get('epic_title'),
+				'deliverable_guid': self.removePrefixFromGuid(item.get('deliverable_url'))
 			}
 			self.unique_epics[epic_guid] = epic
 
@@ -332,8 +333,14 @@ class DeliveryMetricsDataLoader:
 		# for each epic 
 		for guid, epic in self.unique_epics.items():
 
+			new_epic = dict(epic)
+
+			# convert guids to ids
+			deliverable_guid = epic.get('deliverable_guid')
+			new_epic['deliverable_id'] = deliverable_guid_map.get(deliverable_guid)
+
 			# write to db
-			epic_id, change_type = epicModel.syncEpic(epic)
+			epic_id, change_type = epicModel.syncEpic(new_epic)
 
 			# save mapping of guid to db row id
 			if epic_id is not None:
