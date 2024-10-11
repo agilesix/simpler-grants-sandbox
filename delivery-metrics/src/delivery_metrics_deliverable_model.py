@@ -22,9 +22,7 @@ class DeliveryMetricsDeliverableModel(DeliveryMetricsModel):
 
 		# if insert failed, select and update
 		if deliverable_id is None:
-			deliverable_id = self._updateDimensions(cursor, deliverable)
-			if deliverable_id is not None:
-				change_type = DeliveryMetricsChangeType.UPDATE
+			deliverable_id, change_type = self._updateDimensions(cursor, deliverable)
 
 		# insert facts 
 		if deliverable_id is not None:
@@ -65,25 +63,31 @@ class DeliveryMetricsDeliverableModel(DeliveryMetricsModel):
 		return map_id
 
 
-	def _updateDimensions(self, cursor, deliverable: dict) -> int:
+	def _updateDimensions(self, cursor, deliverable: dict) -> (int, DeliveryMetricsChangeType):
+
+		# initialize return value
+		change_type = DeliveryMetricsChangeType.NONE
 
 		# get values needed for sql statement
 		guid = deliverable.get('guid')
 		new_title = deliverable.get('title')
 		new_pillar = deliverable.get('pillar')
+		new_values = (new_title, new_pillar)
 
 		# select
 		select_sql = "select id, title, pillar from deliverable where guid = ?"
 		select_data = (guid,)
 		cursor.execute(select_sql, select_data)
 		deliverable_id, old_title, old_pillar = cursor.fetchone()
+		old_values = (old_title, old_pillar)
 
 		# compare
 		if deliverable_id is not None:
-			if ((new_title, new_pillar) != (old_title, old_pillar)):
+			if (new_values != old_values):
+				change_type = DeliveryMetricsChangeType.UPDATE
 				sql_update = "update deliverable set title = ?, pillar = ?, t_modified = current_timestamp where id = ?"
 				data_update = (new_title, new_pillar, deliverable_id)
 				cursor.execute(sql_update, data_update)
 
-		return deliverable_id
+		return deliverable_id, change_type
 

@@ -15,18 +15,16 @@ class DeliveryMetricsEpicModel(DeliveryMetricsModel):
 		# get cursor to keep open across transactions
 		cursor = self.cursor()
 
-		# attempt insert into dimension table
+		# insert dimensions
 		epic_id = self._insertDimensions(cursor, epic)
 		if epic_id is not None:
 			change_type = DeliveryMetricsChangeType.INSERT
 
 		# if insert failed, select and update
 		if epic_id is None:
-			epic_id = self._updateDimensions(cursor, epic)
-			if epic_id is not None:
-				change_type = DeliveryMetricsChangeType.UPDATE
+			epic_id, change_type = self._updateDimensions(cursor, epic)
 
-		# insert into fact table
+		# insert facts
 		if epic_id is not None:
 			fact_id = self._insertFacts(cursor, epic_id, epic)
 
@@ -66,7 +64,10 @@ class DeliveryMetricsEpicModel(DeliveryMetricsModel):
 		return map_id 
 
 
-	def _updateDimensions(self, cursor, epic: dict) -> int:
+	def _updateDimensions(self, cursor, epic: dict) -> (int, DeliveryMetricsChangeType):
+
+		# initialize return value
+		change_type = DeliveryMetricsChangeType.NONE
 
 		# get values needed for sql statement
 		guid = epic.get('guid')
@@ -81,9 +82,10 @@ class DeliveryMetricsEpicModel(DeliveryMetricsModel):
 		# compare
 		if epic_id is not None:
 			if ((new_title, ) != (old_title, )):
+				change_type = DeliveryMetricsChangeType.UPDATE
 				sql_update = "update epic set title = ?, t_modified = current_timestamp where id = ?"
 				data_update = (new_title, epic_id)
 				cursor.execute(sql_update, data_update)
 
-		return epic_id
+		return epic_id, change_type
 

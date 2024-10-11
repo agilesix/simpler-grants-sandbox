@@ -12,15 +12,20 @@ class DeliveryMetricsSprintModel(DeliveryMetricsModel):
 		# initialize return value
 		change_type = DeliveryMetricsChangeType.NONE
 
-		# attempt insert into dimension table
+		# get cursor to keep open across transactions
+		cursor = self.cursor()
+
+		# insert dimensions
 		sprint_id = self._insertDimensions(sprint)
 		if sprint_id is not None:
 			change_type = DeliveryMetricsChangeType.INSERT
 
-		# TODO: if insert failed, select and update
+		# if insert failed, select and update
 		if sprint_id is None:
-			sprint_id = None
-			#change_type = DeliveryMetricsChangeType.UPDATE
+			sprint_id, change_type = self._updateDimensions(cursor, sprint)
+
+		# close cursor
+		cursor.close()
 
 		return sprint_id, change_type
 
@@ -43,11 +48,34 @@ class DeliveryMetricsSprintModel(DeliveryMetricsModel):
 		return sprint_id
 
 
+	def _updateDimensions(self, cursor, sprint: dict) -> (int, DeliveryMetricsChangeType):
 
+		# initialize return value
+		change_type = DeliveryMetricsChangeType.NONE
 
+		# get values needed for sql statement
+		guid = sprint.get('guid')
+		new_name = sprint.get('name')
+		new_start = self.formatDate(sprint.get('start_date'))
+		new_end = self.formatDate(sprint.get('end_date'))
+		new_duration = sprint.get('duration')
+		new_quad_id = sprint.get('quad_id')
+		new_values = (new_name, new_start, new_end, new_duration, new_quad_id)
 
-		'''
-		# TO DO: select and update
-		sql = "insert into sprint(guid, name, start_date, end_date, duration, quad_id) values (?, ?, ?, ?, ?, ?) on conflict(guid) do update set (name, start_date, end_date, duration, quad_id, t_modified) = (?, ?, ?, ?, ?, current_timestamp) returning id"
-		'''
+		# select
+		select_sql = "select id, name, start_date, end_date, duration, quad_id from sprint where guid = ?"
+		select_data = (guid,)
+		cursor.execute(select_sql, select_data)
+		sprint_id, old_name, old_start, old_end, old_duration, old_quad_id = cursor.fetchone()
+		old_values = (old_name, old_start, old_end, old_duration, old_quad_id)
+
+		# compare
+		if sprint_id is not None:
+			if (new_values != old_values):
+				change_type = DeliveryMetricsChangeType.UPDATE
+				update_sql = "update sprint set name = ?, start_date = ?, end_date = ?, duration = ?, quad_id = ?, t_modified = current_timestamp where id = ?"
+				update_data = new_values + (sprint_id,)
+				cursor.execute(update_sql, update_data)
+
+		return sprint_id, change_type
 

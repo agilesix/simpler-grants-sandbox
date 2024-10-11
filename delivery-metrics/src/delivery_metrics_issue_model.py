@@ -15,17 +15,16 @@ class DeliveryMetricsIssueModel(DeliveryMetricsModel):
 		# get cursor to keep open across transactions
 		cursor = self.cursor()
 
-		# attempt insert into dimension table
+		# insert dimensions
 		issue_id = self._insertDimensions(cursor, issue)
 		if issue_id is not None:
 			change_type = DeliveryMetricsChangeType.INSERT
 
-		# TODO: if insert failed, select and update
+		# if insert failed, select and update
 		if issue_id is None:
-			issue_id = None
-			#change_type = DeliveryMetricsChangeType.UPDATE
+			issue_id, change_type = self._updateDimensions(cursor, issue)
 
-		# insert into fact table
+		# insert facts
 		if issue_id is not None:
 			history_id, map_id = self._insertFacts(cursor, issue_id, issue)
 
@@ -47,9 +46,9 @@ class DeliveryMetricsIssueModel(DeliveryMetricsModel):
 		epic_id = issue.get('epic_id')
 
 		# insert into dimension table: issue
-		sql_dim = "insert into issue (guid, title, type, opened_date, closed_date, parent_issue_guid, epic_id) values (?, ?, ?, ?, ?, ?, ?) on conflict(guid) do nothing returning id"
-		data_dim = (guid, title, t, opened_date, closed_date, parent_guid, epic_id)
-		issue_id = self.insertWithCursor(cursor, sql_dim, data_dim)
+		insert_sql = "insert into issue (guid, title, type, opened_date, closed_date, parent_issue_guid, epic_id) values (?, ?, ?, ?, ?, ?, ?) on conflict(guid) do nothing returning id"
+		insert_data = (guid, title, t, opened_date, closed_date, parent_guid, epic_id)
+		issue_id = self.insertWithCursor(cursor, insert_sql, insert_data)
 
 		return issue_id
 
@@ -64,21 +63,47 @@ class DeliveryMetricsIssueModel(DeliveryMetricsModel):
 		effective = self.getEffectiveDate()
 
 		# insert into fact table: issue_history
-		sql_fact1 = "insert into issue_history (issue_id, status, is_closed, points, d_effective) values (?, ?, ?, ?, ?) on conflict (issue_id, d_effective) do update set (status, is_closed, points, t_modified) = (?, ?, ?, current_timestamp) returning id" 
-		data_fact1 = (issue_id, status, is_closed, points, effective, status, is_closed, points) 
-		history_id = self.insertWithCursor(cursor, sql_fact1, data_fact1)
+		insert_sql1 = "insert into issue_history (issue_id, status, is_closed, points, d_effective) values (?, ?, ?, ?, ?) on conflict (issue_id, d_effective) do update set (status, is_closed, points, t_modified) = (?, ?, ?, current_timestamp) returning id" 
+		insert_data1 = (issue_id, status, is_closed, points, effective, status, is_closed, points) 
+		history_id = self.insertWithCursor(cursor, insert_sql1, insert_data1)
 
 		# insert into fact table: issue_sprint_map
-		sql_fact2 = "insert into issue_sprint_map (issue_id, sprint_id, d_effective) values (?, ?, ?) on conflict (issue_id, d_effective) do update set (sprint_id, t_modified) = (?, current_timestamp) returning id"
-		data_fact2 = (issue_id, sprint_id, effective, sprint_id) 
-		map_id = self.insertWithCursor(cursor, sql_fact2, data_fact2)
+		insert_sql2 = "insert into issue_sprint_map (issue_id, sprint_id, d_effective) values (?, ?, ?) on conflict (issue_id, d_effective) do update set (sprint_id, t_modified) = (?, current_timestamp) returning id"
+		insert_data2 = (issue_id, sprint_id, effective, sprint_id) 
+		map_id = self.insertWithCursor(cursor, insert_sql2, insert_data2)
 
 		return history_id, map_id
 
 
+	def _updateDimensions(self, cursor, issue: dict) -> (int, DeliveryMetricsChangeType):
 
-		'''
-		# TO DO: select and update
-		sql_dim = "insert into issue (guid, title, type, opened_date, closed_date, parent_issue_guid, epic_id) values (?, ?, ?, ?, ?, ?, ?) on conflict(guid) do update set (title, type, opened_date, closed_date, parent_issue_guid, epic_id, t_modified) = (?, ?, ?, ?, ?, ?, current_timestamp) returning id"
-		'''
+		# initialize return value
+		change_type = DeliveryMetricsChangeType.NONE
+
+		# get values needed for sql statement
+		guid = issue.get('guid')
+		new_title = issue.get('title')
+		new_type = issue.get('type')
+		new_opened = self.formatDate(issue.get('opened_date'))
+		new_closed = self.formatDate(issue.get('closed_date'))
+		new_parent = issue.get('parent_guid')
+		new_epic_id = issue.get('epic_id')
+		new_values = (new_title, new_type, new_opened, new_closed, new_parent, new_epic_id)
+
+		# select
+		select_sql = "select id, title, type, opened_date, closed_date, parent_issue_guid, epic_id from issue where guid = ?"
+		select_data = (guid,)
+		cursor.execute(select_sql, select_data)
+		issue_id, old_title, old_type, old_opened, old_closed, old_parent, old_epic_id = cursor.fetchone()
+		old_values = (old_title, old_type, old_opened, old_closed, old_parent, old_epic_id)
+
+		# compare
+		if issue_id is not None:
+			if (new_values != old_values):
+				change_type = DeliveryMetricsChangeType.UPDATE
+				update_sql = "update issue set title = ?, type = ?, opened_date = ?, closed_date = ?, parent_issue_guid = ?, epic_id = ?, t_modified = current_timestamp where id = ?"
+				update_data = new_values + (issue_id,)	
+				cursor.execute(update_sql, update_data)
+
+		return issue_id, change_type
 
