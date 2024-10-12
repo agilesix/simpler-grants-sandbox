@@ -5,6 +5,7 @@ sys.path.insert(0, './loader')
 
 from delivery_metrics_config import DeliveryMetricsConfig
 from delivery_metrics_database import DeliveryMetricsDatabase
+import time
 
 
 class DeliveryMetricsCalculator:
@@ -39,8 +40,9 @@ class DeliveryMetricsCalculator:
 				epic e
 			inner join epic_deliverable_map m on m.epic_id = e.id
 			where 
-				m.deliverable_id = ? 
-			order by D_effective desc
+				m.deliverable_id = ? and
+				m.d_effective <= ?
+			order by d_effective desc
 		'''
 
 		issue_sql = '''
@@ -54,15 +56,17 @@ class DeliveryMetricsCalculator:
 				issue i 
 			inner join issue_history h on h.issue_id = i.id
 			where 
-				i.epic_id = ? 
+				i.epic_id = ? and
+				h.d_effective <= ?
 			order by d_effective 
 		'''
 
 		quad_is_displayed = dict()
+		max_effective_date = self.dbh.getEffectiveDate()
 
 		# get deliverables in each quad
 		cursor = self.dbh.cursor()
-		cursor.execute(deliverable_sql, (self.dbh.getEffectiveDate(),))
+		cursor.execute(deliverable_sql, (max_effective_date,))
 		deliverables = cursor.fetchall()
 		for d_row in deliverables: 
 
@@ -77,7 +81,7 @@ class DeliveryMetricsCalculator:
 			print("\tDELIVERABLE: {} :: {}".format(d_title, d_effective ))
 			
 			# get epics in each deliverable
-			cursor.execute(epic_sql, (d_id,))
+			cursor.execute(epic_sql, (d_id, max_effective_date))
 			epics = cursor.fetchall()
 			for e_row in epics:
 
@@ -87,7 +91,7 @@ class DeliveryMetricsCalculator:
 				print("\t\tEPIC: {} :: {}".format(e_title, e_effective ))
 				
 				# get issues in each epic
-				cursor.execute(issue_sql, (e_id,))
+				cursor.execute(issue_sql, (e_id, max_effective_date))
 				issues = cursor.fetchall()
 				for i_row in issues:
 
@@ -103,7 +107,10 @@ class DeliveryMetricsCalculator:
 
 if __name__ == "__main__":
 
-	config = DeliveryMetricsConfig(None)
+	#effective = time.strptime('20241007', '%Y%m%d')
+	effective = None
+
+	config = DeliveryMetricsConfig(effective)
 	dbh = DeliveryMetricsDatabase(config)
 
 	calc = DeliveryMetricsCalculator(dbh)
