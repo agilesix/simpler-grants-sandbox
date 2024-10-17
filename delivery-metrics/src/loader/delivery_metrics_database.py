@@ -9,6 +9,12 @@ class DeliveryMetricsDatabase:
 		self.config = config
 		self._dbConnection = None
 
+
+	def __del__(self):
+
+		self.disconnect()
+
+
 	def getEffectiveDate(self) -> str:
 
 		return self.config.effectiveDate()
@@ -63,10 +69,4 @@ class DeliveryMetricsDatabase:
 		self._dbConnection = None
 
 	
-	def __del__(self):
-
-		if self._dbConnection:
-			self._dbConnection.close()
-
-
 
