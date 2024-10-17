@@ -16,7 +16,7 @@ class DeliveryMetricsPercentComplete:
 	def __init__(self, config, verbose=False):
 		self.config = config
 		self.dbh = DeliveryMetricsDatabase(config)
-		self.max_effective_date = self.dbh.getEffectiveDate()
+		self.max_effective_date = config.effectiveDate()
 		self.verbose = verbose
 		self._found_some = False
 
