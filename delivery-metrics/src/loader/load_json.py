@@ -27,8 +27,8 @@ if __name__ == "__main__":
 	config = DeliveryMetricsConfig(args.yyyymmdd)
 
 	# load data
-	print("* running data loader with effective date {}".format(config.effectiveDate()))
+	print("...\nrunning data loader with effective date {}".format(config.effectiveDate()))
 	loader = DeliveryMetricsDataLoader(config, file_path)
 	loader.loadData()
-	print("* data loader is done!")
+	print("data loader is done!")
 
