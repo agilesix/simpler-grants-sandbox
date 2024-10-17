@@ -227,8 +227,13 @@ class DeliveryMetricsPercentCompleteTotals:
 	
 	def printResults(self):
 
-		percent_complete_issues = round(100*(self.issues_closed / self.issues), 1)
-		percent_complete_points = round(100*(self.points_closed / self.points), 1)
+		percent_complete_issues = 0
+		percent_complete_points = 0
+
+		if self.issues > 0:
+			percent_complete_issues = round(100*(self.issues_closed / self.issues), 1)
+		if self.points > 0:
+			percent_complete_points = round(100*(self.points_closed / self.points), 1)
 
 		print("\t\tTotal Issues: {}".format(str(self.issues)))
 		print("\t\tTotal Issues Closed: {}".format(str(self.issues_closed)))
