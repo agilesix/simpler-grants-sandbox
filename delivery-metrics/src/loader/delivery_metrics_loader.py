@@ -382,6 +382,3 @@ class DeliveryMetricsDataLoader:
 		print("issue row(s) inserted: {}".format(insert_count['issues']))
 		print("issue row(s) updated: {}".format(update_count['issues']))
 
-		# close db connection
-		db.disconnect()
-
