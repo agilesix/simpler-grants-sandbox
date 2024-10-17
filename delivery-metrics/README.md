@@ -26,7 +26,8 @@ $ ./src/load_json.py -e 20241007 ./json/example-01.json
 ### Step 4 - View test data
 Use a SQLite browser, such as [DB Browser for SQLite](https://sqlitebrowser.org), to connect to `db/delivery_metrics.db`.
 
-## How To Calculate Delivery Metrics
+
+## Getting Started - How To Calculate Delivery Metrics
 
 After loading data into the the database (as described in previous section), it is easy to calculate delivery metrics.
 
@@ -42,3 +43,9 @@ Alternate syntax for specifying the effective date to be used in percent complet
 ```
 $ ./src/calculate_percent_complete.py -e 20241007 
 ```
+
+For more verbose output, use the `-v` flag:
+```
+$ ./src/calculate_percent_complete.py -e 20241007 -v
+```
+
