@@ -1,6 +1,6 @@
 # delivery-metrics
 
-## Getting Started
+## Getting Started - How To Load Data Into Database
 
 ### Step 1 - Clone the repo
 ```
@@ -18,11 +18,27 @@ $ sqlite3 ./db/delivery_metrics.db < ./sql/create_delivery_metrics_db.sql
 $ ./src/load_json.py ./json/example-01.json
 ```
 
-Alternate command line syntax, for specifying the "effective date" to apply to each record processed by the loader. If not specified, the effective date defaults to today (GMT).
+Alternate command line syntax for specifying the "effective date" to apply to each record processed by the loader. If not specified, the effective date defaults to today (GMT).
 ```
 $ ./src/load_json.py -e 20241007 ./json/example-01.json
 ```
 
-### Step 3 - View test data
+### Step 4 - View test data
 Use a SQLite browser, such as [DB Browser for SQLite](https://sqlitebrowser.org), to connect to `db/delivery_metrics.db`.
 
+## How To Calculate Delivery Metrics
+
+After loading data into the the database (as described in previous section), it is easy to calculate delivery metrics.
+
+### Percent Complete
+
+To calculate percent complete for all deliverables:
+```
+$ cd simpler-grants-sandbox/delivery-metrics/
+$ ./src/calculate_percent_complete.py
+```
+
+Alternate syntax for specifying the effective date to be used in percent complete calculations:
+```
+$ ./src/calculate_percent_complete.py -e 20241007 
+```
