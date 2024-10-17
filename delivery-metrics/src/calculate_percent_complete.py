@@ -18,6 +18,7 @@ class DeliveryMetricsPercentComplete:
 		self.dbh = DeliveryMetricsDatabase(config)
 		self.max_effective_date = self.dbh.getEffectiveDate()
 		self.verbose = verbose
+		self._found_some = False
 
 
 	def calculate(self):
@@ -59,6 +60,7 @@ class DeliveryMetricsPercentComplete:
 							print("\t\t\t[ISSUE] {} (effective {}, points={}, closed={})".format(i.get('title'), i.get('effective'), i.get('points'), i.get('closed')))
 
 						# increment counters
+						self._found_some = True
 						total.issues += 1
 						total.points += i.get('points', 0)
 						if i.get('closed', False):
@@ -78,6 +80,10 @@ class DeliveryMetricsPercentComplete:
 
 		# close cursor
 		cursor.close()
+
+		# output if no results found
+		if self._found_some is False:
+			print("no results found")
 
 
 	def getQuads(self, cursor):
