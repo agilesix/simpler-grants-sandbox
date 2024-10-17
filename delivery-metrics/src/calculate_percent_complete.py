@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
+from os.path import dirname, abspath
 import sys
-sys.path.insert(0, './loader')
+sys.path.insert(0, dirname(abspath(__file__)) + '/loader')
 
 from argparse import ArgumentParser
 from delivery_metrics_config import DeliveryMetricsConfig
