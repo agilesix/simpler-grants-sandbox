@@ -12,11 +12,11 @@ import time
 
 class DeliveryMetricsPercentComplete:
 
-	def __init__(self, config):
+	def __init__(self, config, verbose=False):
 		self.config = config
 		self.dbh = DeliveryMetricsDatabase(config)
 		self.max_effective_date = self.dbh.getEffectiveDate()
-		self.verbose = False
+		self.verbose = verbose
 
 
 	def calculate(self):
@@ -239,6 +239,7 @@ if __name__ == "__main__":
 	# define command line args
 	parser = ArgumentParser(description="Calculate % complete of deliverables in delivery metrics database")
 	parser.add_argument("-e", dest="yyyymmdd", type=parseDateArg, help="effective date to use in metrics calculation")
+	parser.add_argument("-v", "--verbose", action="store_true", help="increase output verbosity")
 
 	# get command line args
 	args = parser.parse_args()
@@ -247,9 +248,11 @@ if __name__ == "__main__":
 	config = DeliveryMetricsConfig(args.yyyymmdd)
 	
 	# calculate metrics
-	print("...\ncalculating metrics with effective date <= {}".format(config.effectiveDate()))
-	metrics = DeliveryMetricsPercentComplete(config)
+	print("...")
+	print("calculating metrics with effective date <= {}".format(config.effectiveDate()))
+	print("verbose mode is {state}".format(state="ON" if args.verbose else "OFF"))
+	metrics = DeliveryMetricsPercentComplete(config, args.verbose)
 	metrics.calculate()
-	print("metrics calculations are done!")
+	print("metrics calculations are done")
 
 
