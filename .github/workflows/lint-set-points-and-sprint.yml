@@ -18,7 +18,7 @@ jobs:
       - name: Set default values for sprint and points if unset
         run: |
           ./linters/set_fields_on_close/run.sh \
-            --url "$ISSUE_URL"
+            --url "$ISSUE_URL" \
             --org agilesix \
             --project 18 \
             --sprint-field "Sprint" \
