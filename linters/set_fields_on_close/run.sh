@@ -3,6 +3,7 @@
 # Usage:
 # ./linters/set_fields_on_close/run.sh \
 #  --url "https://github.com/HHS/simpler-grants-gov/issues/123" \
+#  --org "HHS" \
 #  --project 13 \
 #  --sprint-field "Sprint" \
 #  --points-field "Points"
