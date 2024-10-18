@@ -1,0 +1,25 @@
+name: Lint - Set points and sprint on issue close
+
+on:
+  # trigger on PRs that affect this file or a file used to run the linter
+  issues:
+    types: [closed]
+
+jobs:
+  run-inherit-metadata:
+    name: Run set points and sprint values on close
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GH_PROJECT_ACCESS_TOKEN }}
+      ISSUE_URL: ${{ github.event.issue.url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set default values for sprint and points if unset
+        run: |
+          ./linters/set_fields_on_close/run.sh \
+            --url "$ISSUE_URL"
+            --org agilesix \
+            --project 18 \
+            --sprint-field "Sprint" \
+            --points-field "Points"
