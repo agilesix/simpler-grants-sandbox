@@ -83,7 +83,7 @@ gh api graphql \
  select(.project.number == ${project}) |
 
  # filter for items with the sprint or points fields unset
- select (.sprint == null or .points == null) |
+ select (.sprint == null or .points == null or .points.number == 0) |
 
  # format the output
  {
@@ -132,7 +132,7 @@ fi
 # Set the sprint value, if empty
 # #######################################################
 
-if jq -e ".points == null" $item_data_file > /dev/null; then
+if jq -e ".points == null or .points == 0" $item_data_file > /dev/null; then
 
     echo "Updating points field for issue: ${issue_url}"
     point_field_id=$(jq -r '.points.fieldId' "$field_data_file")
