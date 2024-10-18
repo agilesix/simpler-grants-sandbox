@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ secrets.GH_PROJECT_ACCESS_TOKEN }}
-      ISSUE_URL: ${{ github.event.issue.url }}
+      ISSUE_URL: ${{ github.event.issue.html_url }}
     steps:
       - uses: actions/checkout@v4
 
