@@ -6,6 +6,9 @@ query (
   resource(url: $url) {
     ... on Issue {
       # get all of the project items associated with this issue
+      issueType {
+        name
+      }
       projectItems(first: 10) {
         nodes {
           ... on ProjectV2Item {
