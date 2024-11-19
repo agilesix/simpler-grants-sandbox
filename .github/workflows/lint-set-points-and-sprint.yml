@@ -8,7 +8,7 @@ on:
 jobs:
   run-inherit-metadata:
     # Only run if issue was closed by a linked PR
-    if: ${{ github.event.issue.commit_id != null }}
+    if: ${{ github.event.issue.commit_id != 0 }}
     name: Run set points and sprint values on close
     runs-on: ubuntu-latest
     env:
