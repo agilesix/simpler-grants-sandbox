@@ -7,6 +7,7 @@ on:
 
 jobs:
   run-inherit-metadata:
+    if: ${{ github.event.issue.commit_id != null }}
     name: Run set points and sprint values on close
     runs-on: ubuntu-latest
     env:
