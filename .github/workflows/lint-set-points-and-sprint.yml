@@ -18,6 +18,9 @@ jobs:
 
       - name: Print commit
         run: echo "$COMMIT"
+
+      - name: Debug event payload
+        run: echo "${{ toJson(github.event) }}"
       
       - name: Set default values for sprint and points if unset
         run: |
