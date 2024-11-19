@@ -7,16 +7,18 @@ on:
 
 jobs:
   run-inherit-metadata:
-    # Only run if issue was closed by a linked PR
-    if: ${{ github.event.issue.commit_id != 0 }}
     name: Run set points and sprint values on close
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ secrets.GH_PROJECT_ACCESS_TOKEN }}
       ISSUE_URL: ${{ github.event.issue.html_url }}
+      COMMIT: ${{ github.event.issue.commit_id }}
     steps:
       - uses: actions/checkout@v4
 
+      - name: Print commit
+        run: echo "$COMMIT"
+      
       - name: Set default values for sprint and points if unset
         run: |
           ./linters/set_fields_on_close/run.sh \
