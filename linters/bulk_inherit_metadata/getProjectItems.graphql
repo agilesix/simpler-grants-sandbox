@@ -10,7 +10,7 @@ query ($endCursor: String, $login: String!, $project: Int!, $batch: Int!) {
 
 fragment projectFields on ProjectV2 {
   # get project ID
-  id
+  projectId: id
   # get project items in batches of 100, which is the max batch size
   items(first: $batch, after: $endCursor) {
     # allows us to use --paginate in the gh api call
@@ -21,7 +21,7 @@ fragment projectFields on ProjectV2 {
     # fetch details per item in the list
     nodes {
       ... on ProjectV2Item {
-        id
+        itemId: id
         content {
           ... on Issue {
             title
@@ -49,22 +49,13 @@ fragment projectFields on ProjectV2 {
 }
 
 fragment customFields on ProjectV2Item {
-  pillar: fieldValueByName(name: "Pillar") {
+  deliverable: fieldValueByName(name: "Deliverable") {
     ... on ProjectV2ItemFieldSingleSelectValue {
       field {
         ...fieldId
       }
       optionId
       name
-    }
-  }
-  quad: fieldValueByName(name: "Quad") {
-    ... on ProjectV2ItemFieldIterationValue {
-      field {
-        ...fieldId
-      }
-      iterationId
-      title
     }
   }
 }

@@ -1,27 +1,15 @@
 mutation (
   $projectId: ID!
   $itemId: ID!
-  $pillarFieldId: ID!
-  $pillarValue: String!
-  $quadFieldId: ID!
-  $quadValue: String!
+  $deliverableFieldId: ID!
+  $deliverableValue: String!
 ) {
-  pillar: updateProjectV2ItemFieldValue(
+  deliverable: updateProjectV2ItemFieldValue(
     input: {
       projectId: $projectId
       itemId: $itemId
-      fieldId: $pillarFieldId
-      value: { singleSelectOptionId: $pillarValue }
-    }
-  ) {
-    ...UpdateResponseFragment
-  }
-  quad: updateProjectV2ItemFieldValue(
-    input: {
-      projectId: $projectId
-      itemId: $itemId
-      fieldId: $quadFieldId
-      value: { iterationId: $quadValue }
+      fieldId: $deliverableFieldId
+      value: { singleSelectOptionId: $deliverableValue }
     }
   ) {
     ...UpdateResponseFragment
