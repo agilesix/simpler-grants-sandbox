@@ -1,4 +1,4 @@
-name: Lint - Inherit project metadata
+name: Lint - Bulk inherit project metadata
 
 on:
   # manual trigger
@@ -7,7 +7,7 @@ on:
   pull_request:
     paths:
       - linters/bulk_inherit_metadata/**
-      - .github/workflows/lint-inherit-project-metadata.yml
+      - .github/workflows/lint-bulk-inherit-project-metadata.yml
   # trigger on a schedule: Monday-Friday at 1am ET
   schedule:
     - cron: "00 5 * * 1-5"
@@ -25,4 +25,4 @@ jobs:
         run: |
           ./linters/bulk_inherit_metadata/run.sh \
             --org agilesix \
-            --project 17
+            --project 18
