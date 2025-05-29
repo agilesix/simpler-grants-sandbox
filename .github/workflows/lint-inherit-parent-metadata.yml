@@ -11,7 +11,7 @@ jobs:
   inherit-milestone:
     runs-on: ubuntu-latest
     env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.GH_PROJECT_ACCESS_TOKEN }}
       # The number of the GitHub project to inherit the metadata from
       PROJECT_NUMBER: 18
     steps:
