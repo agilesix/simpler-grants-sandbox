@@ -1,0 +1,28 @@
+name: Lint - Inherit parent metadata
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  issues: write
+
+jobs:
+  inherit-milestone:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # The number of the GitHub project to inherit the metadata from
+      PROJECT_NUMBER: 18
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run inherit parent milestone script
+        run: |
+          ./linters/inherit_parent_milestone/run.sh "${{ github.event.issue.html_url }}"
+
+      - name: Run inherit parent deliverable script
+        run: |
+          ./linters/inherit_parent_deliverable/run.sh "${{ github.event.issue.html_url }}" \
+            --project-number "${{ env.PROJECT_NUMBER }}"
