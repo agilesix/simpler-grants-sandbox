@@ -60,10 +60,11 @@ if [[ "$dry_run" == "true" ]]; then
 fi
 
 # #######################################################
-# Define the GraphQL query
+# Define the GraphQL queries
 # #######################################################
 
-graphql_query=$(cat $script_dir/getParentFieldValues.graphql)
+fetch_query=$(cat $script_dir/getParentFieldValues.graphql)
+mutation_query=$(cat $script_dir/updateProjectFieldValue.graphql)
 
 # #######################################################
 # Fetch the issue and parent milestone details
@@ -73,7 +74,7 @@ log "Fetching issue and parent milestone details using gh CLI..."
 data=$(
   gh api graphql \
     -F url="$issue_url" \
-    -f query="$graphql_query" \
+    -f query="$fetch_query" \
     --jq '.data.resource'
 )
 
@@ -125,12 +126,12 @@ fi
 # #######################################################
 
 # Update the deliverable field
-log "Updating deliverable field to match parent..."
+log "Updating deliverable field to match parent: '$parent_deliverable_option_name'"
 gh api graphql \
   -F projectId="$child_project_id" \
   -F itemId="$child_item_id" \
   -F fieldId="$parent_deliverable_field_id" \
   -F value="$parent_deliverable_option_id" \
-  -f query="$(cat ./propagate_deliverable/updateProjectFieldValue.graphql)"
+  -f query="$mutation_query"
 log "Deliverable field updated successfully to '$parent_deliverable_option_name'"
 
