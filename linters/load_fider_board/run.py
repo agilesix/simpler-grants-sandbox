@@ -57,8 +57,8 @@ def get_env(name: str) -> str:
     return value
 
 
-GITHUB_TOKEN = get_env("GITHUB_TOKEN")
-FIDER_API_KEY = get_env("FIDER_API_KEY")
+GITHUB_API_TOKEN = get_env("GITHUB_API_TOKEN")
+FIDER_API_TOKEN = get_env("FIDER_API_TOKEN")
 
 # #######################################################
 # HTTP requests
@@ -108,13 +108,8 @@ def fetch_github_issues(
     """Fetch GitHub issues using the GitHub API."""
     log(f"Fetching {state} issues from {org}/{repo} with label '{label}'")
 
-    # Get GitHub token from environment
-    github_token = os.environ.get("GITHUB_TOKEN")
-    if not github_token:
-        err("GITHUB_TOKEN environment variable must be set")
-
     headers = {
-        "Authorization": f"token {github_token}",
+        "Authorization": f"token {GITHUB_API_TOKEN}",
         "Accept": "application/vnd.github.v3+json",
     }
 
@@ -163,7 +158,7 @@ def fetch_fider_posts(board: str) -> list[dict]:
     log(f"Fetching current Fider posts from {board}.fider.io")
 
     url = f"https://{board}.fider.io/api/v1/posts"
-    headers = {"Authorization": f"Bearer {FIDER_API_KEY}"}
+    headers = {"Authorization": f"Bearer {FIDER_API_TOKEN}"}
 
     posts = make_request(url, headers)
     log(f"Loaded {len(posts)} Fider posts")
@@ -201,7 +196,7 @@ def create_fider_post(board: str, title: str, description: str) -> None:
     url = f"https://{board}.fider.io/api/v1/posts"
     headers = {
         "Content-Type": "application/json",
-        "Authorization": f"Bearer {FIDER_API_KEY}",
+        "Authorization": f"Bearer {FIDER_API_TOKEN}",
     }
 
     data = {"title": title, "description": description}
