@@ -6,15 +6,6 @@ on:
       - "linters/load_fider_board/**"
       - ".github/workflows/run-populate-fider-board.yml"
   workflow_dispatch: # for manual runs
-    inputs:
-      label:
-        description: "Label to use to filter issues"
-        required: true
-        type: string
-      board:
-        description: "Fider board to populate"
-        required: true
-        type: string
 
 permissions:
   issues: read
@@ -52,5 +43,5 @@ jobs:
           python ./linters/load_fider_board/run.py \
             --org "${{ github.event.repository.owner.name }}" \
             --repo "${{ github.event.repository.name }}" \
-            --label "${{ inputs.label }}" \
-            --board "${{ inputs.board }}"
+            --label proposal \
+            --board simplergrants
