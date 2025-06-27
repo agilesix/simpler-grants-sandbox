@@ -31,7 +31,7 @@ jobs:
         if: github.event_name == 'pull_request'
         run: |
           python ./linters/load_fider_board/run.py \
-            --org "${{ github.event.repository.owner.name }}" \
+            --org "${{ github.repository_owner }}" \
             --repo "${{ github.event.repository.name }}" \
             --label proposal \
             --board simplergrants \
@@ -41,7 +41,7 @@ jobs:
         if: github.event_name == 'workflow_dispatch'
         run: |
           python ./linters/load_fider_board/run.py \
-            --org "${{ github.event.repository.owner.name }}" \
+            --org "${{ github.repository_owner }}" \
             --repo "${{ github.event.repository.name }}" \
             --label proposal \
             --board simplergrants
