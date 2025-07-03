@@ -8,9 +8,6 @@ on:
     paths:
       - linters/bulk_inherit_metadata/**
       - .github/workflows/lint-bulk-inherit-project-metadata.yml
-  # trigger on a schedule: Monday-Friday at 1am ET
-  schedule:
-    - cron: "00 5 * * 1-5"
 
 jobs:
   run-inherit-metadata:
