@@ -3,6 +3,7 @@
 Shared utilities for the GitHub to Fider loader.
 """
 
+import re
 import json
 import logging
 import os
@@ -60,6 +61,10 @@ def make_request(
     data: str | None = None,
 ) -> dict:
     """Make an HTTP request and return JSON response."""
+    # Always add a User-Agent header to avoid Cloudflare bot blocking
+    headers = dict(headers)  # copy to avoid mutating caller's dict
+    if "User-Agent" not in headers:
+        headers["User-Agent"] = "Mozilla/5.0 (compatible; FeatureBaseBot/1.0)"
     try:
         req = urllib.request.Request(url, headers=headers, method=method)
         if data:
@@ -77,5 +82,38 @@ def make_request(
         err(f"Request failed: {e}")
         sys.exit(1)
 
-    # This should never be reached due to sys.exit() calls above
-    return {}
+
+# #######################################################
+# Formatting
+# #######################################################
+
+
+def format_post_description(url: str, description: str) -> str:
+    """Format the post description by extracting content between markdown headers."""
+    # Extract text between first and second ### headers using regex
+    # The pattern matches: ^###\s+.*?\n(.*?)(?=\n###\s+|$)
+    # This finds content between the first ### header and either the next ### header or end of string
+    pattern = r"""
+        ^                # Start of line
+        \#\#\#\s+        # Three hash symbols followed by whitespace
+        .*?              # Non-greedy match of any characters
+        (\n)+            # One or more newlines
+        (?P<content>.*?) # Named group: Non-greedy match of any characters (the content we want)
+        (?=              # Positive lookahead
+            \n\#\#\#\s+  # Newline followed by ### and whitespace
+            |            # OR
+            $            # End of string
+        )
+    """
+    match = re.search(pattern, description, re.DOTALL | re.MULTILINE | re.VERBOSE)
+
+    if not match:
+        # Fallback: use the full description, truncated to 255 characters
+        summary = re.sub(r"\s+", " ", description).strip()[:255] + "..."
+    else:
+        # Clean and limit the extracted text
+        extracted_text = match.group("content")
+        summary = re.sub(r"\s+", " ", extracted_text).strip()[:150] + "..."
+
+    # Format with GitHub link and summary
+    return f"{summary}\n\n[GitHub issue]({url})"
