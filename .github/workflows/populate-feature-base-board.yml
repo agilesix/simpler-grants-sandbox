@@ -1,10 +1,10 @@
-name: "Populate Fider board"
+name: "Populate FeatureBase board"
 
 on:
   pull_request:
     paths:
       - "linters/load_pb_board/**"
-      - ".github/workflows/populate-fider-board.yml"
+      - ".github/workflows/populate-feature-base-board.yml"
   workflow_dispatch: # for manual runs
 
 permissions:
@@ -41,7 +41,7 @@ jobs:
             --org "${{ github.repository_owner }}" \
             --repo "${{ github.event.repository.name }}" \
             --label proposal \
-            --platform fider \
+            --platform featurebase \
             --dry-run
 
       - name: Run script (real run)
@@ -51,4 +51,4 @@ jobs:
             --org "${{ github.repository_owner }}" \
             --repo "${{ github.event.repository.name }}" \
             --label proposal \
-            --platform fider
+            --platform featurebase
