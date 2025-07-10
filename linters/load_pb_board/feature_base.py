@@ -70,7 +70,7 @@ def create_post(
     title: str,
     content: str,
     github_url: str | None = None,
-    category: str = "💡 Feature Requests",
+    category: str = "Feature Request",
 ) -> None:
     """Create a new FeatureBase post."""
     url = "https://do.featurebase.app/v2/posts"
