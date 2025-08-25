@@ -145,7 +145,7 @@ def update_github_issue(
 
 def update_github_issues(
     issues: dict[str, GithubIssueData],
-    posts: list[PostData],
+    posts: dict[str, PostData],
     *,
     dry_run: bool,
 ) -> None:
@@ -156,11 +156,11 @@ def update_github_issues(
 
     log(f"Processing {len(posts)} posts (dry_run: {dry_run})")
 
-    for post in posts:
+    for issue_url, post in posts.items():
         # Get the issue data
-        issue = issues.get(post.github_url)
+        issue = issues.get(issue_url)
         if not issue:
-            log(f"Issue not found for post {post.github_url}")
+            log(f"Issue not found for post {issue_url}")
             continue
 
         log(f"Processing issue #{issue.number} in {issue.org}/{issue.repo}")

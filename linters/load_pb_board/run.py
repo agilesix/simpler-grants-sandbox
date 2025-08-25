@@ -15,7 +15,7 @@ from dataclasses import dataclass
 
 import fider
 import feature_base
-from github import fetch_github_issues
+import github
 from utils import log
 
 # #######################################################
@@ -74,7 +74,7 @@ def parse_args() -> CliArgs:
 def load_fider_from_github(args: CliArgs) -> None:
     """Fetch GitHub issues and use them to populate a Fider board."""
     # Fetch GitHub issues
-    github_issues = fetch_github_issues(
+    github_issues = github.fetch_github_issues(
         org=args.org,
         repo=args.repo,
         label=args.label,
@@ -85,18 +85,11 @@ def load_fider_from_github(args: CliArgs) -> None:
     # Fetch Fider posts
     fider_posts = fider.fetch_posts()
 
-    # Extract GitHub URLs from Fider posts
-    post_urls = fider.extract_github_urls_from_posts(
-        posts=fider_posts,
-        org=args.org,
-        repo=args.repo,
-    )
-
     # Check which GitHub issues need to be added
     log("Checking which GitHub issues need to be added to Fider")
     fider.insert_new_posts(
         github_issues=github_issues,
-        post_urls=post_urls,
+        post_urls=set(fider_posts.keys()),
         dry_run=args.dry_run,
     )
 
@@ -106,16 +99,23 @@ def update_github_from_fider(args: CliArgs) -> None:
     # Fetch Fider posts
     fider_posts = fider.fetch_posts()
 
-    # Extract GitHub URLs from Fider posts
-    fider.extract_github_urls_from_posts(
-        posts=fider_posts,
+    # Extract GitHub issues
+    github_issues = github.fetch_github_issues(
         org=args.org,
         repo=args.repo,
+        label=args.label,
+        state=args.state,
+        batch=args.batch,
     )
 
     # Update GitHub issues based on Fider posts
     log("Updating GitHub issues based on Fider posts")
-    # TODO: Implement GitHub issue updates based on Fider posts
+    github.update_github_issues(
+        issues=github_issues,
+        posts=fider_posts,
+        dry_run=args.dry_run,
+    )
+
     if args.dry_run:
         log("Dry run: Would update GitHub issues from Fider posts")
 
@@ -128,7 +128,7 @@ def update_github_from_fider(args: CliArgs) -> None:
 def load_featurebase_from_github(args: CliArgs) -> None:
     """Fetch GitHub issues and use them to populate a FeatureBase board."""
     # Fetch GitHub issues
-    github_issues = fetch_github_issues(
+    github_issues = github.fetch_github_issues(
         org=args.org,
         repo=args.repo,
         label=args.label,
