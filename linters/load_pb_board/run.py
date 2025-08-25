@@ -7,6 +7,7 @@ Usage: From the root of the load_pb_board/ directory:
     --repo simpler-grants-sandbox \
     --label proposal \
     --platform fider \
+    --sync-direction github-to-platform \
     --dry-run
 """
 
@@ -31,6 +32,7 @@ class CliArgs:
     repo: str
     label: str
     platform: str
+    sync_direction: str = "github-to-platform"
     state: str = "open"
     batch: int = 100
     dry_run: bool = False
@@ -44,6 +46,12 @@ def parse_args() -> CliArgs:
     parser.add_argument("--org", required=True, help="GitHub organization")
     parser.add_argument("--repo", required=True, help="GitHub repository")
     parser.add_argument("--label", required=True, help="GitHub issue label")
+    parser.add_argument(
+        "--sync-direction",
+        required=True,
+        choices=["github-to-platform", "platform-to-github"],
+        help="Sync direction (github-to-platform or platform-to-github)",
+    )
     parser.add_argument(
         "--platform",
         required=True,
@@ -60,6 +68,7 @@ def parse_args() -> CliArgs:
         repo=args.repo,
         label=args.label,
         platform=args.platform,
+        sync_direction=args.sync_direction,
         state=args.state,
         batch=args.batch,
         dry_run=args.dry_run,
@@ -186,7 +195,10 @@ def main() -> int:
         log("Running in dry run mode")
 
     if args.platform == "fider":
-        load_fider_from_github(args)
+        if args.sync_direction == "github-to-platform":
+            load_fider_from_github(args)
+        elif args.sync_direction == "platform-to-github":
+            update_github_from_fider(args)
     elif args.platform == "featurebase":
         load_featurebase_from_github(args)
 

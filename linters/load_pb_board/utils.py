@@ -134,14 +134,12 @@ def format_issue_body(
         # Section exists, update it with new post URL and vote count
         # Find the section and replace its content
         pattern = rf"({re.escape(section_header)}.*?)(?=\n###|\Z)"
-        replacement = f"{section_header}\n\n- [Post]({post_url})\n- Votes: {vote_count}"
+        replacement = f"{section_header}\n\n- Vote for this feature: [Post]({post_url})\n- Votes: {vote_count}"
 
         # Use re.sub with DOTALL flag to match across multiple lines
         updated_body = re.sub(pattern, replacement, current_body, flags=re.DOTALL)
         return updated_body
     else:
         # Section doesn't exist, append it at the bottom
-        new_section = (
-            f"\n\n{section_header}\n\n- [Post]({post_url})\n- Votes: {vote_count}"
-        )
+        new_section = f"\n\n{section_header}\n\n- Vote for this feature: [Post]({post_url})\n- Votes: {vote_count}"
         return current_body + new_section

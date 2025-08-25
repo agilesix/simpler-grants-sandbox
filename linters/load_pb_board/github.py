@@ -163,7 +163,9 @@ def update_github_issues(
             log(f"Issue not found for post {issue_url}")
             continue
 
-        log(f"Processing issue #{issue.number} in {issue.org}/{issue.repo}")
+        log(
+            f"Processing issue https://github.com/{issue.org}/{issue.repo}/issues/{issue.number}"
+        )
 
         # Format the new issue body
         issue_body = format_issue_body(

@@ -6,6 +6,7 @@ from utils import format_post_description, get_env, log, make_request
 
 FIDER_API_TOKEN = get_env("FIDER_API_TOKEN")
 BOARD = get_env("FIDER_BOARD")
+FIDER_URL = f"https://{BOARD}.fider.io"
 
 # #######################################################
 # Fider - fetch and parse posts
@@ -16,7 +17,7 @@ def fetch_posts() -> dict[str, PostData]:
     """Fetch Fider posts using the API and return PostData keyed by GitHub issue URLs."""
     log(f"Fetching current Fider posts from {BOARD}.fider.io")
 
-    url = f"https://{BOARD}.fider.io/api/v1/posts"
+    url = f"{FIDER_URL}/api/v1/posts"
     headers = {"Authorization": f"Bearer {FIDER_API_TOKEN}"}
 
     posts = make_request(url, headers)
@@ -44,7 +45,7 @@ def parse_posts(posts: list[dict], fider_url: str) -> dict[str, PostData]:
         if not matches:
             continue
         github_url = matches[0]  # Take the first match
-        fider_url = f"{fider_url}/{post.get('number')}"
+        fider_url = f"{FIDER_URL}/posts/{post.get('number')}"
         posts_dict[github_url] = PostData(
             url=fider_url,
             vote_count=post.get("votesCount", 0),
