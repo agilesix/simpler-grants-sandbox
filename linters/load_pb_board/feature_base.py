@@ -2,6 +2,7 @@ import json
 import re
 from typing import Any
 
+from github import GithubIssueData
 from utils import format_post_description, get_env, log, make_request
 
 FEATURE_BASE_API_TOKEN = get_env("FEATURE_BASE_API_TOKEN")
@@ -94,7 +95,7 @@ def create_post(
 
 
 def insert_new_posts(
-    github_issues: dict[str, dict],
+    github_issues: dict[str, GithubIssueData],
     post_urls: set[str],
     *,
     dry_run: bool,
@@ -108,8 +109,8 @@ def insert_new_posts(
 
         # Create new FeatureBase post
         log(f"Creating new FeatureBase post for {issue_url}")
-        title = issue_data.get("title", "")
-        description = issue_data.get("description", "")
+        title = issue_data.title
+        description = issue_data.body
 
         # Format the description using the parsing logic
         formatted_content = format_post_description(issue_url, description)

@@ -1,6 +1,7 @@
 import json
 import re
 
+from github import GithubIssueData
 from utils import format_post_description, get_env, log, make_request
 
 FIDER_API_TOKEN = get_env("FIDER_API_TOKEN")
@@ -64,7 +65,7 @@ def create_post(title: str, description: str) -> None:
 
 
 def insert_new_posts(
-    github_issues: dict[str, dict],
+    github_issues: dict[str, GithubIssueData],
     post_urls: set[str],
     *,
     dry_run: bool,
@@ -78,8 +79,8 @@ def insert_new_posts(
 
         # Create new Fider post
         log(f"Creating new Fider post for {issue_url}")
-        title = issue_data.get("title", "")
-        description = issue_data.get("description", "")
+        title = issue_data.title
+        description = issue_data.body
 
         # Format the description using the parsing logic
         formatted_description = format_post_description(issue_url, description)
