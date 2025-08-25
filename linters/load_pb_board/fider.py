@@ -1,47 +1,59 @@
 import json
 import re
 
+from github import GithubIssueData, PostData
 from utils import format_post_description, get_env, log, make_request
 
 FIDER_API_TOKEN = get_env("FIDER_API_TOKEN")
 BOARD = get_env("FIDER_BOARD")
+FIDER_URL = f"https://{BOARD}.fider.io"
 
 # #######################################################
 # Fider - fetch and parse posts
 # #######################################################
 
 
-def fetch_posts() -> list[dict]:
-    """Fetch Fider posts using the API."""
+def fetch_posts() -> dict[str, PostData]:
+    """Fetch Fider posts using the API and return PostData keyed by GitHub issue URLs."""
     log(f"Fetching current Fider posts from {BOARD}.fider.io")
 
-    url = f"https://{BOARD}.fider.io/api/v1/posts"
+    url = f"{FIDER_URL}/api/v1/posts"
     headers = {"Authorization": f"Bearer {FIDER_API_TOKEN}"}
 
     posts = make_request(url, headers)
-    log(f"Loaded {len(posts)} Fider posts")
-    return posts if isinstance(posts, list) else []
+    if not posts:
+        log("No posts returned from Fider API")
+        return {}
+
+    if not isinstance(posts, list):
+        log(f"Unexpected response format from Fider API: {type(posts)}")
+        return {}
+
+    return parse_posts(posts, url)
 
 
-def extract_github_urls_from_posts(
-    posts: list[dict],
-    org: str,
-    repo: str,
-) -> set[str]:
-    """Extract GitHub issue URLs from Fider post descriptions."""
-    log("Extracting GitHub issue URLs from Fider posts")
-
-    pattern = re.compile(f"https://github.com/{org}/{repo}/issues/[0-9]+")
-    urls = set()
+def parse_posts(posts: list[dict], fider_url: str) -> dict[str, PostData]:
+    """Parse Fider posts and return PostData keyed by GitHub issue URLs."""
+    posts_dict: dict[str, PostData] = {}
+    pattern = re.compile(r"https://github\.com/[^/]+/[^/]+/issues/[0-9]+")
 
     for post in posts:
         description = post.get("description", "")
-        if description:
-            matches = pattern.findall(description)
-            urls.update(matches)
+        if not description:
+            continue
+        matches = pattern.findall(description)
+        if not matches:
+            continue
+        github_url = matches[0]  # Take the first match
+        fider_url = f"{FIDER_URL}/posts/{post.get('number')}"
+        posts_dict[github_url] = PostData(
+            url=fider_url,
+            vote_count=post.get("votesCount", 0),
+            github_url=github_url,
+        )
 
-    log(f"Found {len(urls)} GitHub issues already in Fider")
-    return urls
+    log(f"Loaded {len(posts_dict)} Fider posts with GitHub URLs")
+    return posts_dict
 
 
 # #######################################################
@@ -64,7 +76,7 @@ def create_post(title: str, description: str) -> None:
 
 
 def insert_new_posts(
-    github_issues: dict[str, dict],
+    github_issues: dict[str, GithubIssueData],
     post_urls: set[str],
     *,
     dry_run: bool,
@@ -78,8 +90,8 @@ def insert_new_posts(
 
         # Create new Fider post
         log(f"Creating new Fider post for {issue_url}")
-        title = issue_data.get("title", "")
-        description = issue_data.get("description", "")
+        title = issue_data.title
+        description = issue_data.body
 
         # Format the description using the parsing logic
         formatted_description = format_post_description(issue_url, description)

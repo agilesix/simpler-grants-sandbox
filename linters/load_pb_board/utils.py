@@ -117,3 +117,29 @@ def format_post_description(url: str, description: str) -> str:
 
     # Format with GitHub link and summary
     return f"{summary}\n\n[GitHub issue]({url})"
+
+
+def format_issue_body(
+    current_body: str,
+    section: str,
+    post_url: str,
+    vote_count: int,
+) -> str:
+    """Updates or adds a section to the issue body for Fider or FeatureBase."""
+    # Create the section header to search for
+    section_header = f"### {section.title()}"
+
+    # Check if the section already exists
+    if section_header in current_body:
+        # Section exists, update it with new post URL and vote count
+        # Find the section and replace its content
+        pattern = rf"({re.escape(section_header)}.*?)(?=\n###|\Z)"
+        replacement = f"{section_header}\n\n- Vote for this feature: [Post]({post_url})\n- Votes: {vote_count}"
+
+        # Use re.sub with DOTALL flag to match across multiple lines
+        updated_body = re.sub(pattern, replacement, current_body, flags=re.DOTALL)
+        return updated_body
+    else:
+        # Section doesn't exist, append it at the bottom
+        new_section = f"\n\n{section_header}\n\n- Vote for this feature: [Post]({post_url})\n- Votes: {vote_count}"
+        return current_body + new_section

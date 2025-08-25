@@ -1,14 +1,14 @@
-name: "Co-planning: Populate Fider from GitHub"
+name: "Co-planning:Update GitHub from Fider"
 
 on:
   pull_request:
     paths:
       - "linters/load_pb_board/**"
-      - ".github/workflows/populate-fider-board.yml"
+      - ".github/workflows/update-github-from-fider.yml"
   workflow_dispatch: # for manual runs
 
 permissions:
-  issues: read
+  issues: write
 
 defaults:
   run:
@@ -42,7 +42,7 @@ jobs:
             --repo "${{ github.event.repository.name }}" \
             --label proposal \
             --platform fider \
-            --sync-direction github-to-platform \
+            --sync-direction platform-to-github \
             --dry-run
 
       - name: Run script (real run)
@@ -53,4 +53,4 @@ jobs:
             --repo "${{ github.event.repository.name }}" \
             --label proposal \
             --platform fider \
-            --sync-direction git-to-platform
+            --sync-direction platform-to-github

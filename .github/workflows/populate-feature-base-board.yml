@@ -1,4 +1,4 @@
-name: "Populate FeatureBase board"
+name: "Co-planning: Populate FeatureBase from GitHub"
 
 on:
   pull_request:
@@ -42,6 +42,7 @@ jobs:
             --repo "${{ github.event.repository.name }}" \
             --label proposal \
             --platform featurebase \
+            --sync-direction github-to-platform \
             --dry-run
 
       - name: Run script (real run)
@@ -51,4 +52,5 @@ jobs:
             --org "${{ github.repository_owner }}" \
             --repo "${{ github.event.repository.name }}" \
             --label proposal \
-            --platform featurebase
+            --platform featurebase \
+            --sync-direction github-to-platform
