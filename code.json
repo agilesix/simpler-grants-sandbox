@@ -1,0 +1,60 @@
+{
+  "name": "simpler-grants-sandbox",
+  "description": "Example repo to experiment with and demo potential features for simpler-grants-gov repo",
+  "longDescription": "",
+  "status": "",
+  "permissions": {
+    "license": [
+      {
+        "name": "",
+        "URL": ""
+      }
+    ],
+    "usageType": "",
+    "exemptionText": ""
+  },
+  "organization": "",
+  "repositoryURL": "https://github.com/agilesix/simpler-grants-sandbox",
+  "projectURL": "",
+  "repositoryHost": "github",
+  "repositoryVisibility": "public",
+  "vcs": "git",
+  "laborHours": 4366,
+  "reuseFrequency": {
+    "forks": 0,
+    "clones": 0
+  },
+  "platforms": [],
+  "categories": [],
+  "softwareType": "",
+  "languages": [
+    "Python",
+    "Shell"
+  ],
+  "maintenance": "",
+  "contractNumber": "",
+  "date": {
+    "created": "2024-09-18T15:28:52Z",
+    "lastModified": "2025-10-07T15:35:21Z",
+    "metaDataLastUpdated": "2025-10-07T15:36:44.132Z"
+  },
+  "tags": [],
+  "contact": {
+    "email": "",
+    "name": ""
+  },
+  "feedbackMechanisms": [
+    "https://github.com/agilesix/simpler-grants-sandbox/issues"
+  ],
+  "localisation": false,
+  "repositoryType": "",
+  "userInput": false,
+  "fismaLevel": "",
+  "group": "",
+  "projects": [],
+  "systems": [],
+  "upstream": "",
+  "subsetInHealthcare": [],
+  "userType": [],
+  "maturityModelTier": 0
+}
