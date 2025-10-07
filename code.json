@@ -1,7 +1,7 @@
 {
   "name": "simpler-grants-sandbox",
   "description": "Example repo to experiment with and demo potential features for simpler-grants-gov repo",
-  "longDescription": "",
+  "longDescription": "Test preserve long description",
   "status": "",
   "permissions": {
     "license": [
