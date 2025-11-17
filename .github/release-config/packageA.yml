@@ -1,0 +1,18 @@
+changelog:
+  exclude:
+    labels:
+      - ignore-for-release
+      - internal
+      - packageB
+    authors:
+      # Add bot usernames here if you want to exclude them
+      # - dependabot[bot]
+      # - renovate[bot]
+
+  categories:
+    - title: Changes
+      labels:
+        - packageA
+      exclude:
+        labels:
+          - packageB
