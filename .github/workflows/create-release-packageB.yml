@@ -48,21 +48,6 @@ jobs:
 
           echo "✓ Latest tag '$LATEST_TAG' is valid"
 
-          # Validate previous tag if provided
-          if [ -n "$PREVIOUS_TAG" ]; then
-            if [[ ! "$PREVIOUS_TAG" == "$PREFIX"* ]]; then
-              echo "✗ Previous tag '$PREVIOUS_TAG' must start with '$PREFIX'"
-              exit 1
-            fi
-            
-            if ! git rev-parse "$PREVIOUS_TAG" >/dev/null 2>&1; then
-              echo "✗ Tag '$PREVIOUS_TAG' does not exist"
-              exit 1
-            fi
-            
-            echo "✓ Previous tag '$PREVIOUS_TAG' is valid"
-          fi
-
       - name: Generate release notes
         id: release-notes
         run: |
