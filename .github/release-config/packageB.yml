@@ -8,6 +8,3 @@ changelog:
     - title: Changes
       labels:
         - packageB
-      exclude:
-        labels:
-          - packageA
