@@ -12,7 +12,7 @@ on:
         required: false
         type: string
       dry_run:
-        description: "Dry run mode (default: true) - set to false to actually create the release"
+        description: "Dry run mode (default: false) - set to true to preview the release notes"
         required: false
         type: boolean
         default: false
