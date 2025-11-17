@@ -1,0 +1,112 @@
+name: "Create Release - Package B"
+
+on:
+  workflow_dispatch:
+    inputs:
+      latest_tag:
+        description: "Latest tag (e.g., packageB@0.2.0)"
+        required: true
+        type: string
+      previous_tag:
+        description: "Previous tag (e.g., packageB@0.1.0) - optional"
+        required: false
+        type: string
+      dry_run:
+        description: "Dry run mode (default: true) - set to false to actually create the release"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate tags
+        run: |
+          PREFIX="packageB@"
+          LATEST_TAG="${{ github.event.inputs.latest_tag }}"
+          PREVIOUS_TAG="${{ github.event.inputs.previous_tag }}"
+
+          # Validate latest tag starts with prefix
+          if [[ ! "$LATEST_TAG" == "$PREFIX"* ]]; then
+            echo "✗ Latest tag '$LATEST_TAG' must start with '$PREFIX'"
+            exit 1
+          fi
+
+          # Validate latest tag exists
+          if ! git rev-parse "$LATEST_TAG" >/dev/null 2>&1; then
+            echo "✗ Tag '$LATEST_TAG' does not exist"
+            exit 1
+          fi
+
+          echo "✓ Latest tag '$LATEST_TAG' is valid"
+
+          # Validate previous tag if provided
+          if [ -n "$PREVIOUS_TAG" ]; then
+            if [[ ! "$PREVIOUS_TAG" == "$PREFIX"* ]]; then
+              echo "✗ Previous tag '$PREVIOUS_TAG' must start with '$PREFIX'"
+              exit 1
+            fi
+            
+            if ! git rev-parse "$PREVIOUS_TAG" >/dev/null 2>&1; then
+              echo "✗ Tag '$PREVIOUS_TAG' does not exist"
+              exit 1
+            fi
+            
+            echo "✓ Previous tag '$PREVIOUS_TAG' is valid"
+          fi
+
+      - name: Generate release notes
+        id: release-notes
+        run: |
+          LATEST_TAG="${{ github.event.inputs.latest_tag }}"
+          PREVIOUS_TAG="${{ github.event.inputs.previous_tag }}"
+
+          if [ -n "$PREVIOUS_TAG" ]; then
+            echo "Generating release notes between $PREVIOUS_TAG and $LATEST_TAG"
+            NOTES=$(gh api repos/${{ github.repository }}/releases/generate-notes \
+              -f tag_name="$LATEST_TAG" \
+              -f previous_tag_name="$PREVIOUS_TAG" \
+              -f configuration_file_path=".github/release-config/packageB.yml" \
+              -q '.body')
+          else
+            echo "Generating release notes for $LATEST_TAG"
+            NOTES=$(gh api repos/${{ github.repository }}/releases/generate-notes \
+              -f tag_name="$LATEST_TAG" \
+              -f configuration_file_path=".github/release-config/packageB.yml" \
+              -q '.body')
+          fi
+
+          # Output notes using multiline format
+          echo "notes<<EOF" >> $GITHUB_OUTPUT
+          echo "$NOTES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+          # Display notes in dry-run mode
+          if [ "${{ github.event.inputs.dry_run }}" == "true" ] || [ -z "${{ github.event.inputs.dry_run }}" ]; then
+            echo ""
+            echo "=== DRY RUN MODE - Release notes preview ==="
+            echo "Latest tag: $LATEST_TAG"
+            echo "Previous tag: $PREVIOUS_TAG"
+            echo ""
+            echo "$NOTES"
+            echo "=== End of preview ==="
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create release
+        if: github.event.inputs.dry_run != 'true'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.event.inputs.latest_tag }}
+          body: ${{ steps.release-notes.outputs.notes }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
