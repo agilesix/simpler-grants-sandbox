@@ -3,11 +3,6 @@ changelog:
     labels:
       - ignore-for-release
       - internal
-      - packageA
-    authors:
-      # Add bot usernames here if you want to exclude them
-      # - dependabot[bot]
-      # - renovate[bot]
 
   categories:
     - title: Changes
