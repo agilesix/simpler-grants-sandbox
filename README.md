@@ -4,3 +4,7 @@ Example repo to experiment with and demo potential features for simpler-grants-g
 ### Package A
 
 - Add line
+
+### Package B
+
+- Add line
