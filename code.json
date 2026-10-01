@@ -1,5 +1,6 @@
 {
   "name": "simpler-grants-sandbox",
+  "version": "",
   "description": "Example repo to experiment with and demo potential features for simpler-grants-gov repo",
   "longDescription": "Test preserve long description",
   "status": "",
@@ -15,11 +16,14 @@
   },
   "organization": "",
   "repositoryURL": "https://github.com/agilesix/simpler-grants-sandbox",
-  "projectURL": "",
   "repositoryHost": "github",
   "repositoryVisibility": "public",
+  "homepageURL": "",
+  "downloadURL": "",
+  "disclaimerURL": "",
+  "disclaimerText": "",
   "vcs": "git",
-  "laborHours": 4366,
+  "laborHours": 4488,
   "reuseFrequency": {
     "forks": 0,
     "clones": 0
@@ -32,20 +36,23 @@
     "Shell"
   ],
   "maintenance": "",
-  "contractNumber": "",
+  "contractNumber": [],
+  "SBOM": "https://github.com/agilesix/simpler-grants-sandbox/network/dependencies",
+  "relatedCode": [],
+  "reusedCode": [],
+  "partners": [],
   "date": {
     "created": "2024-09-18T15:28:52Z",
-    "lastModified": "2025-10-07T15:35:21Z",
-    "metaDataLastUpdated": "2025-10-07T15:36:44.132Z"
+    "lastModified": "2025-11-18T15:01:23Z",
+    "metadataLastUpdated": "2026-10-01T00:55:45.963Z"
   },
   "tags": [],
   "contact": {
     "email": "",
     "name": ""
   },
-  "feedbackMechanisms": [
-    "https://github.com/agilesix/simpler-grants-sandbox/issues"
-  ],
+  "feedbackMechanism": "https://github.com/agilesix/simpler-grants-sandbox/issues",
+  "AIUseCaseID": "0",
   "localisation": false,
   "repositoryType": "",
   "userInput": false,
@@ -53,7 +60,6 @@
   "group": "",
   "projects": [],
   "systems": [],
-  "upstream": "",
   "subsetInHealthcare": [],
   "userType": [],
   "maturityModelTier": 0
